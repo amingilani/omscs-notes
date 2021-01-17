@@ -155,9 +155,9 @@ We're only discussing the inputs and outputs of the algorithms for now, and so:
     * One last input to ensure that the same <span class="red">_k_</span>, and _M_ don't map to the same output. This may be:
         * Randomness
         * Any other state, such as a counter
-* **To decrypt the message** — the receiver runs the decryption algorithm _D_  which is deterministic, and will always produces the same output _M_ for the same ciphertext _C_. It takes as inputs:
+* **To decrypt the message** — the receiver runs the decryption algorithm _D_  which is deterministic, and will always produces the same output _M_ for the same ciphertext \\(C\\). It takes as inputs:
     * The shared secret key <span class="red">_k_</span>
-    * The ciphertext _C_.
+    * The ciphertext \\(C\\).
 
 For an encryption scheme to be useful, it should ensure that for combination of valid messages, and keys, we should be able to encrypt and decrypt the original message back. Or more formally, for all _M ∈ MsgSp_ and _<span class="red">_k_</span> ∈ KeySp_ / output of K, ensure that _D(<span class="red">_k_</span>,ε(<span class="red">_k_</span>,M)) = M_.
 
@@ -175,6 +175,24 @@ The **OneTimePad** is the best-known encryption scheme in the world. It originat
 It is important that the key is only used once, and so you need a new key to encrypt a new message, or you need a very long key so you can use different chunks to encrypt different messages. But you can never reuse the same key for different messages.
 
 Intuitively, we can tell that a scheme is secure if someone without the secret key cannot discover any information by looking at the message. Now let's take a look at how to describe it more formally.
+
+## L9: Perfect Shannon Security 
+
+The first formal definition of security was proposed by Claude Shannon, known as the "father of information theory". An asymmetric encryption scheme is perfectly secure (or Shannon secure) if for every ciphertext \\(C\\) and messages \\(M_1\\) and \\(M_2\\), the probability of the either message \\(M_1\\) or \\(M_2\\) being encrypted to \\(C\\) is equal.
+
+That is to say, it is just as likely that it is one message, than it is any other message. This captures the intuition that ciphertexts leak no information, since it is impossible to ascertain the contents of the message. More formally, though, this is represented as:
+
+$$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$$
+
+## L10: Theorem and Proof 
+
+Let's prove that the OneTimePad is Perfectly/Shannon Secure.
+
+![](module1-0015.png)
+
+Recall, that we need to proove that it is likely that any ciphertext can be any message.
+
+1. So, let's select a ciphertext \\(C \in \\{0,1\\}^n\\)
 
 <!-- ![](module1-0012.png)
 ![](module1-0013.png)
