@@ -4,21 +4,10 @@
   identifier = "prologue"
   url = "/docs/prologue/"
 
-[[docs]]
-  name = "Help"
-  weight = 60
-  identifier = "help"
-  url = "/docs/help/"
-
 [[main]]
-  name = "Docs"
+  name = "CS6260"
   url = "/docs/prologue/introduction/"
   weight = 10
-
-[[main]]
-  name = "Blog"
-  url = "/blog/"
-  weight = 20
 
 # [[social]]
 #   name = "Twitter"
