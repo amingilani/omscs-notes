@@ -1,12 +1,12 @@
 [[docs]]
-  name = "Prologue"
+  name = "CS6260"
   weight = 10
-  identifier = "prologue"
-  url = "/docs/prologue/"
+  identifier = "cs6260"
+  url = "/docs/cs6260/"
 
 [[main]]
-  name = "CS6260"
-  url = "/docs/prologue/introduction/"
+  name = "cs6260"
+  url = "/docs/cs6260/module1/"
   weight = 10
 
 # [[social]]
