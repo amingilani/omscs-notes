@@ -13,6 +13,11 @@ weight: 100
 toc: true
 ---
 
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+
 <style>
     .red{
         color: red;
@@ -156,10 +161,20 @@ We're only discussing the inputs and outputs of the algorithms for now, and so:
 
 For an encryption scheme to be useful, it should ensure that for combination of valid messages, and keys, we should be able to encrypt and decrypt the original message back. Or more formally, for all _M ∈ MsgSp_ and _<span class="red">_k_</span> ∈ KeySp_ / output of K, ensure that _D(<span class="red">_k_</span>,ε(<span class="red">_k_</span>,M)) = M_.
 
+## L8: OneTimePad
 
+![](module1-0012.png)
 
+The **OneTimePad** is the best-known encryption scheme in the world. It originated as the Vernam cipher in 1919. It's a very simple scheme.
 
+* The **Message Space** \\(\mathit{MsgSp}\\), and the **Key Space** \\(\mathit{KeySp}\\) are both a set of \\(n\\) bit long strings, i.e. \\( \mathit{MsgSp} = \mathit{KeySp} = \\{ 0 , 1 \\}^{n} \\).
+* The **Key Generation algorithm** \\(\kappa\\) selects a random \\(n\\) bit long string \\({\color{Red} K}\\), where \\(n\\) is the same bit length as the message \\(M\\).
+* The **Encryption Algorithm** \\(\varepsilon\\) operates by applying exclusive or (XOR) to the message and the key to produce the ciphertext \\(C\\), i.e. \\(\varepsilon({\color{Red} K}, M) : C \leftarrow M \oplus {\color{Red} K}\ \mathrm{return}\ C\\)
+* The **Decryption Algorithm** \\(\varepsilon\\) operates by XOR-ing the ciphertext and the key to produce the message back again, i.e. \\(\varepsilon({\color{Red} K}, C) : M \leftarrow C \oplus {\color{Red} K}\ \mathrm{return}\ M\\)
 
+It is important that the key is only used once, and so you need a new key to encrypt a new message, or you need a very long key so you can use different chunks to encrypt different messages. But you can never reuse the same key for different messages.
+
+Intuitively, we can tell that a scheme is secure if someone without the secret key cannot discover any information by looking at the message. Now let's take a look at how to describe it more formally.
 
 <!-- ![](module1-0012.png)
 ![](module1-0013.png)
