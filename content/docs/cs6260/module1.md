@@ -24,7 +24,7 @@ toc: true
         }
 </style>
 
-## Module Introduction
+## Introduction
 
 ![](module1-0000.png)
 
@@ -178,9 +178,9 @@ Intuitively, we can tell that a scheme is secure if someone without the secret k
 
 ## L9: Perfect Shannon Security 
 
-The first formal definition of security was proposed by Claude Shannon, known as the "father of information theory". An asymmetric encryption scheme is perfectly secure (or Shannon secure) if for every ciphertext \\(C\\) and messages \\(M_1\\) and \\(M_2\\), the probability of the either message \\(M_1\\) or \\(M_2\\) being encrypted to \\(C\\) is equal.
+The first formal definition of security was proposed by Claude Shannon, known as the "father of information theory". An encryption scheme is perfectly secure (or Shannon secure) if for a ciphertext \\(C\\) and messages \\(M_1\\) and \\(M_2\\), the probability of the either message \\(M_1\\) or \\(M_2\\) being encrypted to \\(C\\) is equal.
 
-That is to say, it is just as likely that it is one message, than it is any other message. This captures the intuition that ciphertexts leak no information, since it is impossible to ascertain the contents of the message. More formally, though, this is represented as:
+That is to say, for any given ciphertext it is just as likely that it is one message, than it is another message if the key is unknown. This captures the intuition that ciphertexts leaks no information, since it is impossible to ascertain the contents of the message. More formally, though, this is represented as:
 
 $$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$$
 
@@ -190,13 +190,47 @@ Let's prove that the OneTimePad is Perfectly/Shannon Secure.
 
 ![](module1-0015.png)
 
-Recall, that we need to proove that it is likely that any ciphertext can be any message.
+Recall, that we need prove that it is likely that any ciphertext can be any message for a variable key. Let's work through this step-by-step
 
-1. So, let's select a ciphertext \\(C \in \\{0,1\\}^n\\)
+1. Let's select a ciphertext specific cyphertext \\(C\\), and a specific message \\(M\\). For the OneTimePad we know that \\(C \in \\{0,1\\}^n\\) and \\(M\in \\{0,1\\}^n\\)
+1. Let's now determine the probability that a randomly selected key \\({\color{Red} K}\\) will successfully encrypt the message into the cyphertext, i.e  \\(Pr[\varepsilon({\color{Red} K},M_1 ) = C]\\):
+    1. Due to the way the OneTimePad scheme operates, we know that the probability of the key encrypting, is the same as the probability of the same key decrypting and so \\(Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[{\color{Red} K} = M \oplus C] \\)
+    1. To evaluate the probability that a randomly selected key will successfully decrypt the ciphertext, we recall that \\({\color{Red} K} \in \\{0,1\\}^n\\)
+    1. And so, since there are \\(2^n\\) possible keys, we can determine that \\(Pr[{\color{Red} K} = M \oplus C] = \frac{1}{2^n} \\)
+1. With this, we have proven that for any ciphertext \\(C\\) and messages \\(M_1\\) and \\(M_2\\), the probability of the either message \\(M_1\\) or \\(M_2\\) being encrypted to \\(C\\) using an unknown key \\({\color{Red} K}\\) is equal.
 
-<!-- ![](module1-0012.png)
-![](module1-0013.png)
-![](module1-0014.png)
-![](module1-0015.png)
+The limitation of the OneTimePad is that it requires a secret key of a length just as long as the message. In practice we want to share a short secret key with long messages.
+
+## L11: Shannon Theorem
+
 ![](module1-0016.png)
-![](module1-0017.png) -->
+
+The Shannon Theorem says that the OneTimePad's limitation of a secret key just as long as the message is unavoidable for perfect secrecy. Let's prove this:
+
+1. Let's assume a keyspace smaller than the message space, i.e \\(KeySp < MsgSp\\)
+1. Let's select a specific message \\(M_1\\), and a secret key \\({\color{Red} K_1}\\) and compute the ciphertext specific cyphertext \\(C = \varepsilon({\color{Red} K}, M_1)\\).
+1. Thus we, know the probability that some key encrypts \\(M_1\\) to \\(C_1\\) is non-zero, because we know that \\({\color{Red} K_1}\\) exists, i.e. \\(Pr[\varepsilon({\color{Red} K},M_1 ) = C] > 0\\).
+1. Now, since we know the that the keyspace is smaller than the message space, let's assume that there exists some message \\(M_2\\) that cannot be encrypted to the same ciphertext \\(C\\), i.e. \\(Pr[\varepsilon({\color{Red} K},M_2 ) = C] = 0\\)
+1. With last two statements combined, we realize that for we can no longer map any two messages onto the same ciphertext, i.e \\(Pr[\varepsilon({\color{Red} K},M_1 ) = C] \neq Pr[\varepsilon({\color{Red} K},M_2 ) = C]\\)
+1. And so we have proven that if the keyspace is smaller than the message space, we will not have perfect secrecy.
+
+This implies that the keyspace should at least as large as the message space.
+
+## L12: Lesson 1 Summary 
+
+![](module1-0017.png)
+
+We can't do better than the OneTimePad. That's a fact. However, it's still okay, we don't really need perfect secrecy in practice. This is the end for "information-theory" cryptography. However, "computational-complexity" cryptography opens up many more avenues.
+
+If we relax the security requirement, we should still be fine. Some of the some assumptions include:
+* Our adversaries are computationally bounded
+* Our adversaries will only spend a reasonable amount of time attacking out system, e.g. a hundred or even a million years
+
+
+Additionally, we have the following assumptions:
+* There are "hard" problems that we can build upon, e.g. factoring large numbers. Cryptography these kinds of problems.
+* Secret keys are kept secret: no viruses, compromised computers, etc. Later on we'll discuss how cryptography can help with this as well.
+* Algorithms themselves are public (Kerckhoff's princple)
+
+With all this in place, we can begin exploring "computational-complexity" cryptography which opens a lot more possibilities.
+
