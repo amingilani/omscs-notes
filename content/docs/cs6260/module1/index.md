@@ -54,13 +54,13 @@ Most of us use cryptography behind the scenes every day without realizing. It's 
 
 Let's look at our main crypto players and settings. 
 
-When two parties want to communicate securely with data privacy. They are often called Alice and Bob but we will call them \\(S\\) asdasd (sender) and \\(R\\) (receiver). A third, usually an eavesdropper named Eve, is called \\(A\\) (attacker) here. The sender wants to wants to send messages to the receiver. For security to exist, there needs to be some secret information not known to the attacker. Otherwise \\(A\\) can do anything \\(S\\) and \\(R\\) can do.
+When two parties want to communicate securely with data privacy. They are often called Alice and Bob but we will call them $S$ asdasd (sender) and $R$ (receiver). A third, usually an eavesdropper named Eve, is called $A$ (attacker) here. The sender wants to wants to send messages to the receiver. For security to exist, there needs to be some secret information not known to the attacker. Otherwise $A$ can do anything $S$ and $R$ can do.
 
 ### Symmetric-key Setting
 
 {{< img src="module1-0004.png" alt="Rectangle" alt="Symmetric-key Setting Diagram" class="border-0" >}}
 
-One of the settings in cryptography is called the symmetric-key setting. A secret key \\(K\\) is shared by \\(S\\) and \\(R\\), but not \\(A\\). The old cryptos: Caesar's cipher, enigma machine, substitution ciphers, they all operate in this symmetric key setting. There are better modern symmetric-key cryptographic schemes, and they have much better efficiency.
+One of the settings in cryptography is called the symmetric-key setting. A secret key $K$ is shared by $S$ and $R$, but not $A$. The old cryptos: Caesar's cipher, enigma machine, substitution ciphers, they all operate in this symmetric key setting. There are better modern symmetric-key cryptographic schemes, and they have much better efficiency.
 
 For this setting to work, the sender and receiver have to agree on a shared secret key before communicating. This can be difficult, e.g. when shopping online, how can you send your credit card number to a site you're visiting for the first time? For this a different setting may be needed called: the asymmetric-key setting or public-key setting.
 
@@ -69,7 +69,7 @@ For this setting to work, the sender and receiver have to agree on a shared secr
 
 {{< img src="module1-0005.png" alt="Rectangle" alt="Asymmetric-key Setting Diagram" class="border-0" >}}
 
-In this setting, only the receiver will hold the secret key \\(skR\\), and everyone will have the public key \\(pkR\\) of the receiver. Most importantly, though, so will the sender. How everyone gets the public key we will learn later on, but for now let's assume there's a shared trusted directory which lists all party's names and public keys together for anyone to look up.
+In this setting, only the receiver will hold the secret key $skR$, and everyone will have the public key $pkR$ of the receiver. Most importantly, though, so will the sender. How everyone gets the public key we will learn later on, but for now let's assume there's a shared trusted directory which lists all party's names and public keys together for anyone to look up.
 
 This setting is much more difficult than the symmetric-key setting. In fact, all of public-key cryptography happened since the late 1970's. Even in the 1970's people didn't believe the asymmetric-key setting was possible. This setting means that two people can meet in public for the first time, without sharing a secret, and be able to communicate securely. The RSA cryptosystem is an example of a public-key cryptographic scheme.
 
@@ -116,36 +116,36 @@ In the trial and error approach, you design a scheme that you and your colleague
 
 ### Provable Security
 
-This was designed in the 1980's, and with this approach, it's possible to prove that a scheme is secure. It provides security guarantees. It's a proof by contradiction. You posit that if an attack is found then a *hard problem* will have to be solved, like factoring primes. This approach requires a good definition what you mean by "secure" means and that is what we will explore in this course. We will learn this approach in depth later on, studying definitions for various cryptographic goals and discover that this can also be used to prove insecurities. That will lead us to find attacks more easily.
+This approach was designed in the 1980's, and with it, it's possible to _prove_ that a scheme is secure. It guarantees security. It's [proof by contradiction](https://en.wikipedia.org/wiki/Proof_by_contradiction). You posit that if an attack is found then a _hard problem_, like factoring primes, will be solved. This approach requires a _good_ definition of "secure" and that is what we will explore in this course. We will learn this approach in depth later on when we study definitions for various cryptographic goals and discover that it can also be used to prove insecurities. We will then be able to find attacks more easily.
 
 ## L6: Symmetric Encryption 
 
 For now, let's learn the syntax of a symmetric encryption scheme. All symmetric encryption schemes consist of:
 
-* **The message space:** \\(MsgSp\\) — This describes the limit of the message we can encrypt. For many schemes, this is a set of all bit strings, or a bit string of a specific length, e.g. 120 bits
-* **The key generation algorithm:** \\(K\\), this describes how it is that we determine the key for encryption. However, in many algorithms, the key may be as simple as a random number from a key space \\(KeySp\\).
-* **The encryption algorithm:** \\(\varepsilon\\)
-* **The decryption algorithm:** \\(\mathcal{D}\\)
+* **The message space:** $MsgSp$ — This describes the limit of the message we can encrypt. For many schemes, this is a set of all bit strings, or a bit string of a specific length, e.g. 120 bits
+* **The key generation algorithm:** $K$, this describes how it is that we determine the key for encryption. However, in many algorithms, the key may be as simple as a random number from a key space $KeySp$.
+* **The encryption algorithm:** $\varepsilon$
+* **The decryption algorithm:** $\mathcal{D}$
 
 ## L7: Key Generation Algorithm 
 
 {{< img src="module1-0011.png" alt="General Key Generation Algorithm slide" class="border-0" >}}
 
-Usually the key generation algorithm \\(K\\) is a randomized algorithm, so we feed it some randomness, and the output is a secret key \\({\color{Red} K}\\). This secret key is then shared by both the sender and the receiver.
+Usually the key generation algorithm $K$ is a randomized algorithm, so we feed it some randomness, and the output is a secret key ${\color{Red} K}$. This secret key is then shared by both the sender and the receiver.
 
 We're only discussing the inputs and outputs of the algorithms for now, and so:
 
-* **To encrypt a message** — the sender will run the encryption algorithm \\(\varepsilon\\) that produces a cipher text \\(C\\). The inputs for \\(\varepsilon\\) are:
-    * The shared secret key \\({\color{Red} K}\\)
-    * The message \\(M\\) such that \\(M ∈ MsgSp\\)
-    * One last input to ensure that the same \\({\color{Red} K}\\), and \\(M\\) don't map to the same output. This may be:
+* **To encrypt a message** — the sender will run the encryption algorithm $\varepsilon$ that produces a cipher text $C$. The inputs for $\varepsilon$ are:
+    * The shared secret key ${\color{Red} K}$
+    * The message $M$ such that $M ∈ MsgSp$
+    * One last input to ensure that the same ${\color{Red} K}$, and $M$ don't map to the same output. This may be:
         * Randomness
         * Any other state, such as a counter
-* **To decrypt the message** — the receiver runs the decryption algorithm \\(\mathcal{D}\\)  which is deterministic, and will always produces the same output \\(M\\) for the same ciphertext \\(C\\). It takes as inputs:
-    * The shared secret key \\({\color{Red} K}\\)
-    * The ciphertext \\(C\\).
+* **To decrypt the message** — the receiver runs the decryption algorithm $\mathcal{D}$  which is deterministic, and will always produces the same output $M$ for the same ciphertext $C$. It takes as inputs:
+    * The shared secret key ${\color{Red} K}$
+    * The ciphertext $C$.
 
-For an encryption scheme to be useful, it should ensure that for combination of valid messages, and keys, we should be able to encrypt and decrypt the original message back. Or more formally, for all \\(M \in MsgSp\\) and \\({\color{Red} K} ∈ KeySp\\), ensure that \\(\mathcal{D} ({\color{Red} K},\varepsilon({\color{Red} K},M)) = M\\).
+For an encryption scheme to be useful, it should ensure that for combination of valid messages, and keys, we should be able to encrypt and decrypt the original message back. Or more formally, for all $M \in MsgSp$ and ${\color{Red} K} ∈ KeySp$, ensure that $\mathcal{D} ({\color{Red} K},\varepsilon({\color{Red} K},M)) = M$.
 
 ## L8: OneTimePad
 
@@ -153,10 +153,10 @@ For an encryption scheme to be useful, it should ensure that for combination of 
 
 The **OneTimePad** is the best-known encryption scheme in the world. It originated as the Vernam cipher in 1919. It's a very simple scheme.
 
-* The **Message Space** \\(\mathit{MsgSp}\\), and the **Key Space** \\(\mathit{KeySp}\\) are both a set of \\(n\\) bit long strings, i.e. \\( \mathit{MsgSp} = \mathit{KeySp} = \\{ 0 , 1 \\}^{n} \\).
-* The **Key Generation algorithm** \\(\kappa\\) selects a random \\(n\\) bit long string \\({\color{Red} K}\\), where \\(n\\) is the same bit length as the message \\(M\\).
-* The **Encryption Algorithm** \\(\varepsilon\\) operates by applying exclusive or (XOR) to the message and the key to produce the ciphertext \\(C\\), i.e. \\(\varepsilon({\color{Red} K}, M) : C \leftarrow M \oplus {\color{Red} K}\ \mathrm{return}\ C\\)
-* The **Decryption Algorithm** \\(\varepsilon\\) operates by XOR-ing the ciphertext and the key to produce the message back again, i.e. \\(\varepsilon({\color{Red} K}, C) : M \leftarrow C \oplus {\color{Red} K}\ \mathrm{return}\ M\\)
+* The **Message Space** $\mathit{MsgSp}$, and the **Key Space** $\mathit{KeySp}$ are both a set of $n$ bit long strings, i.e. $ \mathit{MsgSp} = \mathit{KeySp} = \\{ 0 , 1 \\}^{n} $.
+* The **Key Generation algorithm** $\kappa$ selects a random $n$ bit long string ${\color{Red} K}$, where $n$ is the same bit length as the message $M$.
+* The **Encryption Algorithm** $\varepsilon$ operates by applying exclusive or (XOR) to the message and the key to produce the ciphertext $C$, i.e. $\varepsilon({\color{Red} K}, M) : C \leftarrow M \oplus {\color{Red} K}\ \mathrm{return}\ C$
+* The **Decryption Algorithm** $\mathcal{D}$ operates by XOR-ing the ciphertext and the key to produce the message back again, i.e. $\mathcal{D}({\color{Red} K}, C) : M \leftarrow C \oplus {\color{Red} K}\ \mathrm{return}\ M$
 
 It is important that the key is only used once, and so you need a new key to encrypt a new message, or you need a very long key so you can use different chunks to encrypt different messages. But you can never reuse the same key for different messages.
 
@@ -164,7 +164,7 @@ Intuitively, we can tell that a scheme is secure if someone without the secret k
 
 ## L9: Perfect Shannon Security 
 
-The first formal definition of security was proposed by Claude Shannon, known as the "father of information theory". An encryption scheme is perfectly secure (or Shannon secure) if for a ciphertext \\(C\\) and messages \\(M_1\\) and \\(M_2\\), the probability of the either message \\(M_1\\) or \\(M_2\\) being encrypted to \\(C\\) is equal.
+The first formal definition of security was proposed by Claude Shannon, known as the "father of information theory". An encryption scheme is perfectly secure (or Shannon secure) if for a ciphertext $C$ and messages $M_1$ and $M_2$, the probability of the either message $M_1$ or $M_2$ being encrypted to $C$ is equal.
 
 That is to say, for any given ciphertext it is just as likely that it is one message, than it is another message if the key is unknown. This captures the intuition that ciphertexts leaks no information, since it is impossible to ascertain the contents of the message. More formally, though, this is represented as:
 
@@ -178,12 +178,12 @@ Let's prove that the OneTimePad is Perfectly/Shannon Secure.
 
 Recall, that we need prove that it is likely that any ciphertext can be any message for a variable key. Let's work through this step-by-step
 
-1. Let's select a ciphertext specific cyphertext \\(C\\), and a specific message \\(M\\). For the OneTimePad we know that \\(C \in \\{0,1\\}^n\\) and \\(M\in \\{0,1\\}^n\\)
-1. Let's now determine the probability that a randomly selected key \\({\color{Red} K}\\) will successfully encrypt the message into the cyphertext, i.e  \\(Pr[\varepsilon({\color{Red} K},M_1 ) = C]\\):
-    1. Due to the way the OneTimePad scheme operates, we know that the probability of the key encrypting, is the same as the probability of the same key decrypting and so \\(Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[{\color{Red} K} = M \oplus C] \\)
-    1. To evaluate the probability that a randomly selected key will successfully decrypt the ciphertext, we recall that \\({\color{Red} K} \in \\{0,1\\}^n\\)
-    1. And so, since there are \\(2^n\\) possible keys, we can determine that \\(Pr[{\color{Red} K} = M \oplus C] = \frac{1}{2^n} \\)
-1. With this, we have proven that for any ciphertext \\(C\\) and messages \\(M_1\\) and \\(M_2\\), the probability of the either message \\(M_1\\) or \\(M_2\\) being encrypted to \\(C\\) using an unknown key \\({\color{Red} K}\\) is equal.
+1. Let's select a ciphertext specific cyphertext $C$, and a specific message $M$. For the OneTimePad we know that $C \in \\{0,1\\}^n$ and $M\in \\{0,1\\}^n$
+1. Let's now determine the probability that a randomly selected key ${\color{Red} K}$ will successfully encrypt the message into the cyphertext, i.e  $Pr[\varepsilon({\color{Red} K},M_1 ) = C]$:
+    1. Due to the way the OneTimePad scheme operates, we know that the probability of the key encrypting, is the same as the probability of the same key decrypting and so $Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[{\color{Red} K} = M \oplus C] $
+    1. To evaluate the probability that a randomly selected key will successfully decrypt the ciphertext, we recall that ${\color{Red} K} \in \\{0,1\\}^n$
+    1. And so, since there are $2^n$ possible keys, we can determine that $Pr[{\color{Red} K} = M \oplus C] = \frac{1}{2^n} $
+1. With this, we have proven that for any ciphertext $C$ and messages $M_1$ and $M_2$, the probability of the either message $M_1$ or $M_2$ being encrypted to $C$ using an unknown key ${\color{Red} K}$ is equal.
 
 The limitation of the OneTimePad is that it requires a secret key of a length just as long as the message. In practice we want to share a short secret key with long messages.
 
@@ -193,11 +193,11 @@ The limitation of the OneTimePad is that it requires a secret key of a length ju
 
 The Shannon Theorem says that the OneTimePad's limitation of a secret key just as long as the message is unavoidable for perfect secrecy. Let's prove this:
 
-1. Let's assume a keyspace smaller than the message space, i.e \\(KeySp < MsgSp\\)
-1. Let's select a specific message \\(M_1\\), and a secret key \\({\color{Red} K_1}\\) and compute the ciphertext specific cyphertext \\(C = \varepsilon({\color{Red} K}, M_1)\\).
-1. Thus we, know the probability that some key encrypts \\(M_1\\) to \\(C_1\\) is non-zero, because we know that \\({\color{Red} K_1}\\) exists, i.e. \\(Pr[\varepsilon({\color{Red} K},M_1 ) = C] > 0\\).
-1. Now, since we know the that the keyspace is smaller than the message space, let's assume that there exists some message \\(M_2\\) that cannot be encrypted to the same ciphertext \\(C\\), i.e. \\(Pr[\varepsilon({\color{Red} K},M_2 ) = C] = 0\\)
-1. With last two statements combined, we realize that for we can no longer map any two messages onto the same ciphertext, i.e \\(Pr[\varepsilon({\color{Red} K},M_1 ) = C] \neq Pr[\varepsilon({\color{Red} K},M_2 ) = C]\\)
+1. Let's assume a keyspace smaller than the message space, i.e $KeySp < MsgSp$
+1. Let's select a specific message $M_1$, and a secret key ${\color{Red} K_1}$ and compute the ciphertext specific cyphertext $C = \varepsilon({\color{Red} K}, M_1)$.
+1. Thus we, know the probability that some key encrypts $M_1$ to $C_1$ is non-zero, because we know that ${\color{Red} K_1}$ exists, i.e. $Pr[\varepsilon({\color{Red} K},M_1 ) = C] > 0$.
+1. Now, since we know the that the keyspace is smaller than the message space, let's assume that there exists some message $M_2$ that cannot be encrypted to the same ciphertext $C$, i.e. $Pr[\varepsilon({\color{Red} K},M_2 ) = C] = 0$
+1. With last two statements combined, we realize that for we can no longer map any two messages onto the same ciphertext, i.e $Pr[\varepsilon({\color{Red} K},M_1 ) = C] \neq Pr[\varepsilon({\color{Red} K},M_2 ) = C]$
 1. And so we have proven that if the keyspace is smaller than the message space, we will not have perfect secrecy.
 
 This implies that the keyspace should at least as large as the message space.
