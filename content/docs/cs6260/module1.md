@@ -12,13 +12,6 @@ menu:
 weight: 100
 toc: true
 ---
-
-<style>
-    .red{
-        color: red;
-        }
-</style>
-
 ## Introduction
 
 ![](module1-0000.png)
