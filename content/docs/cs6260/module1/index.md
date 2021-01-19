@@ -14,7 +14,7 @@ toc: true
 ---
 ## Introduction
 
-{{< img src="module1-0000.png" alt="Rectangle" alt="Introduction slide" class="border-0" >}}
+{{< img src="module1-0000.png" alt="Introduction slide" class="border-0" >}}
 
 
 This module will describe the topics of the course, and explain symmetric key encryption. We'll learn what security is in the context of symmetric-key cryptography and our first symmetric-key encryption scheme. This scheme will turn out to be the most efficient and secure encryption scheme in the world, but we'll also learn what its limitations are.
@@ -58,7 +58,7 @@ When two parties want to communicate securely with data privacy. They are often 
 
 ### Symmetric-key Setting
 
-{{< img src="module1-0004.png" alt="Rectangle" alt="Symmetric-key Setting Diagram" class="border-0" >}}
+{{< img src="module1-0004.png" alt="Symmetric-key Setting Diagram" class="border-0" >}}
 
 One of the settings in cryptography is called the symmetric-key setting. A secret key $K$ is shared by $S$ and $R$, but not $A$. The old cryptos: Caesar's cipher, enigma machine, substitution ciphers, they all operate in this symmetric key setting. There are better modern symmetric-key cryptographic schemes, and they have much better efficiency.
 
@@ -67,7 +67,7 @@ For this setting to work, the sender and receiver have to agree on a shared secr
 
 ### Asymmetric-key Setting
 
-{{< img src="module1-0005.png" alt="Rectangle" alt="Asymmetric-key Setting Diagram" class="border-0" >}}
+{{< img src="module1-0005.png" alt="Asymmetric-key Setting Diagram" class="border-0" >}}
 
 In this setting, only the receiver will hold the secret key $skR$, and everyone will have the public key $pkR$ of the receiver. Most importantly, though, so will the sender. How everyone gets the public key we will learn later on, but for now let's assume there's a shared trusted directory which lists all party's names and public keys together for anyone to look up.
 
@@ -81,7 +81,7 @@ As discussed before, in this course, we'll explore the main goals of cryptograph
 + data authenticity, and
 + data integrity
 
-{{< img src="module1-0006.png" alt="Rectangle" alt="Goals and Primitives Slides" class="border-0" >}}
+{{< img src="module1-0006.png" alt="Goals and Primitives Slides" class="border-0" >}}
 
 We'll explore all these in the contexts of both the symmetric and asymmetric key settings.
 ### Data Privacy
@@ -108,7 +108,7 @@ In this course, we'll study how a lot of crypto-algorithms operate. We will use 
 * Trial and error
 * Provable security
 
-{{< img src="module1-0008.png" alt="Rectangle" alt="Scheme slide" class="border-0" >}}
+{{< img src="module1-0008.png" alt="Scheme slide" class="border-0" >}}
 
 ### Trial and error
 
@@ -123,7 +123,7 @@ This approach was designed in the 1980's, and with it, it's possible to _prove_ 
 For now, let's learn the syntax of a symmetric encryption scheme. All symmetric encryption schemes consist of:
 
 * **The message space:** $MsgSp$ — This describes the limit of the message we can encrypt. For many schemes, this is a set of all bit strings, or a bit string of a specific length, e.g. 120 bits
-* **The key generation algorithm:** $K$, this describes how it is that we determine the key for encryption. However, in many algorithms, the key may be as simple as a random number from a key space $KeySp$.
+* **The key generation algorithm:** $K$, this describes how it is that we determine the key for encryption. However, in many algorithms, the key may be as simple as a random number from a keyspace $KeySp$.
 * **The encryption algorithm:** $\varepsilon$
 * **The decryption algorithm:** $\mathcal{D}$
 
@@ -149,7 +149,7 @@ For an encryption scheme to be useful, it should ensure that for combination of 
 
 ## L8: OneTimePad
 
-{{< img src="module1-0012.png" alt="Rectangle" alt="OneTimePad Explained" class="border-0" >}}
+{{< img src="module1-0012.png" alt="OneTimePad Explained" class="border-0" >}}
 
 The **OneTimePad** is the best-known encryption scheme in the world. It originated as the Vernam cipher in 1919. It's a very simple scheme.
 
@@ -166,15 +166,26 @@ Intuitively, we can tell that a scheme is secure if someone without the secret k
 
 The first formal definition of security was proposed by Claude Shannon, known as the "father of information theory". An encryption scheme is perfectly secure (or Shannon secure) if for a ciphertext $C$ and messages $M_1$ and $M_2$, the probability of the either message $M_1$ or $M_2$ being encrypted to $C$ is equal.
 
-That is to say, for any given ciphertext it is just as likely that it is one message, than it is another message if the key is unknown. This captures the intuition that ciphertexts leaks no information, since it is impossible to ascertain the contents of the message. More formally, though, this is represented as:
+{{< img src="module1-0014.png" alt="Shannon Security" class="border-0" >}}
 
-$$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon(,M_2 ) = C]$$
+That is to say, for any given ciphertext it is just as likely that it is one message, than it is another message if the key is unknown. This captures the intuition that ciphertexts leaks no information, since it is impossible to ascertain the contents of the message. More formally, though, this may be represented as:
+
+$$Pr[\varepsilon({\color{Red} K_1},M_1 ) = C] = Pr[\varepsilon({\color{Red} K_2},M_2 ) = C]$$
+
+Where:
+
+* ${\color{Red} K_1}$ and ${\color{Red} K_2}$ are randomly chosen secret keys in the keyspace
+* $M_1$ and $M_2$ are any two messages in the message space, and
+* $C$ is a single chosen cipher in the cipher space
+
+(n.b. My representation is different from the one in the lecture slides. It makes more sense for me to write it this way.)
+
 
 ## L10: Theorem and Proof 
 
 Let's prove that the OneTimePad is Perfectly/Shannon Secure.
 
-{{< img src="module1-0015.png" alt="Rectangle" alt="OneTimePad's Shannon Security Proof" class="border-0" >}}
+{{< img src="module1-0015.png" alt="OneTimePad's Shannon Security Proof" class="border-0" >}}
 
 Recall, that we need prove that it is likely that any ciphertext can be any message for a variable key. Let's work through this step-by-step
 
@@ -189,7 +200,7 @@ The limitation of the OneTimePad is that it requires a secret key of a length ju
 
 ## L11: Shannon Theorem
 
-{{< img src="module1-0016.png" alt="Rectangle" alt="Shannon's Thereom, the OneTimePad is optimum" class="border-0" >}}
+{{< img src="module1-0016.png" alt="Shannon's Thereom, the OneTimePad is optimum" class="border-0" >}}
 
 The Shannon Theorem says that the OneTimePad's limitation of a secret key just as long as the message is unavoidable for perfect secrecy. Let's prove this:
 
@@ -204,11 +215,11 @@ This implies that the keyspace should at least as large as the message space.
 
 ## L12: Lesson 1 Summary 
 
-{{< img src="module1-0017.png" alt="Rectangle" alt="Lesson summary slide" class="border-0" >}}
+{{< img src="module1-0017.png" alt="Lesson summary slide" class="border-0" >}}
 
 We can't do better than the OneTimePad. That's a fact. However, it's still okay, we don't really need perfect secrecy in practice. This is the end for "information-theory" cryptography. However, "computational-complexity" cryptography opens up many more avenues.
 
-If we relax the security requirement, we should still be fine. Some of the some assumptions include:
+If we relax the security requirement, we should still be fine. Some of the assumptions include:
 * Our adversaries are computationally bounded
 * Our adversaries will only spend a reasonable amount of time attacking out system, e.g. a hundred or even a million years
 
