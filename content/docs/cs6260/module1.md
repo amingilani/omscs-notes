@@ -54,20 +54,19 @@ The main goals of cryptography are:
 
 That said, these may not all be required. And we will also talk about other goals at the end of this course.
 
-Most of us use cryptography behind the scenes every day without realizing. It's used all the times when we do every day tasks like shopping online, paying bills, using our cellphones, etc. We can even stream online and crypto will be used in the background. Half of the internet's traffic is encrypted nowadays, and this might increase in the future.
+Most of us use cryptography behind the scenes every day without realizing. It's used all the time when we do every day tasks like shopping online, paying bills, using our cellphones, etc. We can even stream online and crypto will be used in the background. Half of the internet's traffic is encrypted nowadays, and this might increase in the future.
 
 ## L3: Players and Settings
 
-
 Let's look at our main crypto players and settings. 
 
-When two parties want to communicate securely with data privacy. They are often called Alice and Bob but we will call them _S_ (sender) and _R_ (receiver). A third, usually an eavesdropper named Eve, is called _A_ (attacker) here. The sender wants to wants to send messages to the receiver. For security to exist, there needs to be some secret information not known to the attacker. Otherwise _A_ can do anything _S_ and _R_ can do.
+When two parties want to communicate securely with data privacy. They are often called Alice and Bob but we will call them \\(S\\) asdasd (sender) and \\(R\\) (receiver). A third, usually an eavesdropper named Eve, is called \\(A\\) (attacker) here. The sender wants to wants to send messages to the receiver. For security to exist, there needs to be some secret information not known to the attacker. Otherwise \\(A\\) can do anything \\(S\\) and \\(R\\) can do.
 
 ### Symmetric-key Setting
 
 ![](module1-0004.png)
 
-One of the settings in cryptography is called the symmetric-key setting. A secret key _K_ is shared by _S_ and _R_, but not _A_. The old cryptos: Caesar's cipher, enigma machine, substitution ciphers, they all operate in this symmetric key setting. There are better modern symmetric-key cryptographic schemes, and they have much better efficiency.
+One of the settings in cryptography is called the symmetric-key setting. A secret key \\(K\\) is shared by \\(S\\) and \\(R\\), but not \\(A\\). The old cryptos: Caesar's cipher, enigma machine, substitution ciphers, they all operate in this symmetric key setting. There are better modern symmetric-key cryptographic schemes, and they have much better efficiency.
 
 For this setting to work, the sender and receiver have to agree on a shared secret key before communicating. This can be difficult, e.g. when shopping online, how can you send your credit card number to a site you're visiting for the first time? For this a different setting may be needed called: the asymmetric-key setting or public-key setting.
 
@@ -76,7 +75,7 @@ For this setting to work, the sender and receiver have to agree on a shared secr
 
 ![](module1-0005.png)
 
-In this setting, only the receiver will hold the secret key _skR_, and everyone will have the public key _pkR_ of the receiver. Most importantly, though, so will the sender. How everyone gets the public key we will learn later on, but for now let's assume there's a shared trusted directory which lists all party's names and public keys together for anyone to look up.
+In this setting, only the receiver will hold the secret key \\(skR\\), and everyone will have the public key \\(pkR\\) of the receiver. Most importantly, though, so will the sender. How everyone gets the public key we will learn later on, but for now let's assume there's a shared trusted directory which lists all party's names and public keys together for anyone to look up.
 
 This setting is much more difficult than the symmetric-key setting. In fact, all of public-key cryptography happened since the late 1970's. Even in the 1970's people didn't believe the asymmetric-key setting was possible. This setting means that two people can meet in public for the first time, without sharing a secret, and be able to communicate securely. The RSA cryptosystem is an example of a public-key cryptographic scheme.
 
@@ -110,7 +109,7 @@ For data authenticity and for data integrity, the solutions will in each setting
 ## L5: How Good is a Scheme
 
 
-In this course, we'll study how a lot of crypto-algorithms operate. We will use the terms "protocol" and "scheme" interchangeably. How do we determine how _good_ the scheme is? There are two approaches:
+In this course, we'll study how a lot of crypto-algorithms operate. We will use the terms "protocol" and "scheme" interchangeably. How do we determine how *good* the scheme is? There are two approaches:
 
 * Trial and error
 * Provable security
@@ -123,38 +122,36 @@ In the trial and error approach, you design a scheme that you and your colleague
 
 ### Provable Security
 
-This was designed in the 1980's, and with this approach, it's possible to prove that a scheme is secure. It provides security guarantees. It's a proof by contradiction. You posit that if an attack is found then a _hard problem_ will have to be solved, like factoring primes. This approach requires a good definition what you mean by "secure" means and that is what we will explore in this course. We will learn this approach in depth later on, studying definitions for various cryptographic goals and discover that this can also be used to prove insecurities. That will lead us to find attacks more easily.
+This was designed in the 1980's, and with this approach, it's possible to prove that a scheme is secure. It provides security guarantees. It's a proof by contradiction. You posit that if an attack is found then a *hard problem* will have to be solved, like factoring primes. This approach requires a good definition what you mean by "secure" means and that is what we will explore in this course. We will learn this approach in depth later on, studying definitions for various cryptographic goals and discover that this can also be used to prove insecurities. That will lead us to find attacks more easily.
 
 ## L6: Symmetric Encryption 
 
 For now, let's learn the syntax of a symmetric encryption scheme. All symmetric encryption schemes consist of:
 
-* **The message space:** _MsgSp_ — This describes the limit of the message we can encrypt. For many schemes, this is a set of all bit strings, or a bit string of a specific length, e.g. 120 bits
-* **The key generation algorithm:** _K_, this describes how it is that we determine the key for encryption. However, in many algorithms, the key may be as simple as a random number from a key space _KeySp_.
-* **The encryption algorithm:** _ε_
-* **The deencryption algorithm:** _D_
+* **The message space:** \\(MsgSp\\) — This describes the limit of the message we can encrypt. For many schemes, this is a set of all bit strings, or a bit string of a specific length, e.g. 120 bits
+* **The key generation algorithm:** \\(K\\), this describes how it is that we determine the key for encryption. However, in many algorithms, the key may be as simple as a random number from a key space \\(KeySp\\).
+* **The encryption algorithm:** \\(\varepsilon\\)
+* **The decryption algorithm:** \\(\mathcal{D}\\)
 
 ## L7: Key Generation Algorithm 
 
 ![](module1-0011.png)
 
-(n.b. I'm swapping the uppercase red <span class="red">_K_</span>, for a lowercase red <span class="red">_k_</span> to aid plaintext and colorblind readers)
-
-Usually the key generation algorithm _K_ is a randomized algorithm, so we feed it some randomness, and the output is a secret key <span class="red">_k_</span>. This secret key is then shared by both the sender and the receiver.
+Usually the key generation algorithm \\(K\\) is a randomized algorithm, so we feed it some randomness, and the output is a secret key \\({\color{Red} K}\\). This secret key is then shared by both the sender and the receiver.
 
 We're only discussing the inputs and outputs of the algorithms for now, and so:
 
-* **To encrypt a message** — the sender will run the encryption algorithm _ε_ that produces a cipher text _C_. The inputs for _ε_ are:
-    * The shared secret key <span class="red">_k_</span>
-    * The message _M_ such that _M ∈ MsgSp_
-    * One last input to ensure that the same <span class="red">_k_</span>, and _M_ don't map to the same output. This may be:
+* **To encrypt a message** — the sender will run the encryption algorithm \\(\varepsilon\\) that produces a cipher text \\(C\\). The inputs for \\(\varepsilon\\) are:
+    * The shared secret key \\({\color{Red} K}\\)
+    * The message \\(M\\) such that \\(M ∈ MsgSp\\)
+    * One last input to ensure that the same \\({\color{Red} K}\\), and \\(M\\) don't map to the same output. This may be:
         * Randomness
         * Any other state, such as a counter
-* **To decrypt the message** — the receiver runs the decryption algorithm _D_  which is deterministic, and will always produces the same output _M_ for the same ciphertext \\(C\\). It takes as inputs:
-    * The shared secret key <span class="red">_k_</span>
+* **To decrypt the message** — the receiver runs the decryption algorithm \\(\mathcal{D}\\)  which is deterministic, and will always produces the same output \\(M\\) for the same ciphertext \\(C\\). It takes as inputs:
+    * The shared secret key \\({\color{Red} K}\\)
     * The ciphertext \\(C\\).
 
-For an encryption scheme to be useful, it should ensure that for combination of valid messages, and keys, we should be able to encrypt and decrypt the original message back. Or more formally, for all _M ∈ MsgSp_ and _<span class="red">_k_</span> ∈ KeySp_ / output of K, ensure that _D(<span class="red">_k_</span>,ε(<span class="red">_k_</span>,M)) = M_.
+For an encryption scheme to be useful, it should ensure that for combination of valid messages, and keys, we should be able to encrypt and decrypt the original message back. Or more formally, for all \\(M \in MsgSp\\) and \\({\color{Red} K} ∈ KeySp\\), ensure that \\(\mathcal{D} ({\color{Red} K},\varepsilon({\color{Red} K},M)) = M\\).
 
 ## L8: OneTimePad
 
@@ -177,7 +174,7 @@ The first formal definition of security was proposed by Claude Shannon, known as
 
 That is to say, for any given ciphertext it is just as likely that it is one message, than it is another message if the key is unknown. This captures the intuition that ciphertexts leaks no information, since it is impossible to ascertain the contents of the message. More formally, though, this is represented as:
 
-$$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$$
+$$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon(,M_2 ) = C]$$
 
 ## L10: Theorem and Proof 
 
@@ -225,7 +222,7 @@ If we relax the security requirement, we should still be fine. Some of the some 
 Additionally, we have the following assumptions:
 * There are "hard" problems that we can build upon, e.g. factoring large numbers. Cryptography these kinds of problems.
 * Secret keys are kept secret: no viruses, compromised computers, etc. Later on we'll discuss how cryptography can help with this as well.
-* Algorithms themselves are public (Kerckhoff's princple)
+* Algorithms themselves are public (Kerckhoff's principle)
 
 With all this in place, we can begin exploring "computational-complexity" cryptography which opens a lot more possibilities.
 
