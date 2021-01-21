@@ -1,10 +1,10 @@
 # Meta Data for SEO
 
 ## Homepage
-title = "OMSCS CS6260 Notes"
+title = "Gilani's Notes"
 titleSeparator = "-"
 titleAddition = "Amin Gilani"
-description = "As I was going through my OMSCS CS6260 class, I started taking notes, here they are for your perusal."
+description = "As I continue through the Georgia Tech OMSCS program, I'll keep publishing my notes here."
 
 ## Open Graph + Twitter Cards
 images = ["torch.png"]

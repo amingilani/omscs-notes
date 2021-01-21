@@ -5,7 +5,7 @@
   url = "/docs/cs6260/"
 
 [[main]]
-  name = "CS6260"
+  name = "Notes"
   url = "/docs/cs6260/module1/"
   weight = 10
 
