@@ -170,15 +170,13 @@ The first formal definition of security was proposed by Claude Shannon, known as
 
 That is to say, for any given ciphertext it is just as likely that it is one message, than it is another message if the key is unknown. This captures the intuition that ciphertexts leaks no information, since it is impossible to ascertain the contents of the message. More formally, though, this may be represented as:
 
-$$Pr[\varepsilon({\color{Red} K_1},M_1 ) = C] = Pr[\varepsilon({\color{Red} K_2},M_2 ) = C]$$
+$$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$$
 
 Where:
 
-* ${\color{Red} K_1}$ and ${\color{Red} K_2}$ are randomly chosen secret keys in the keyspace
+* ${\color{Red} K}$ is a randomly chosen secret keys in the keyspace
 * $M_1$ and $M_2$ are any two messages in the message space, and
 * $C$ is a single chosen cipher in the cipher space
-
-(n.b. My representation is different from the one in the lecture slides. It makes more sense for me to write it this way.)
 
 
 ## L10: Theorem and Proof 
@@ -189,8 +187,8 @@ Let's prove that the OneTimePad is Perfectly/Shannon Secure.
 
 Recall, that we need prove that it is likely that any ciphertext can be any message for a variable key. Let's work through this step-by-step
 
-1. Let's select a ciphertext specific cyphertext $C$, and a specific message $M$. For the OneTimePad we know that $C \in \\{0,1\\}^n$ and $M\in \\{0,1\\}^n$
-1. Let's now determine the probability that a randomly selected key ${\color{Red} K}$ will successfully encrypt the message into the cyphertext, i.e  $Pr[\varepsilon({\color{Red} K},M_1 ) = C]$:
+1. Let's select a ciphertext specific ciphertext $C$, and a specific message $M$. For the OneTimePad we know that $C \in \\{0,1\\}^n$ and $M\in \\{0,1\\}^n$
+1. Let's now determine the probability that a randomly selected key ${\color{Red} K}$ will successfully encrypt the message into the ciphertext, i.e  $Pr[\varepsilon({\color{Red} K},M_1 ) = C]$:
     1. Due to the way the OneTimePad scheme operates, we know that the probability of the key encrypting, is the same as the probability of the same key decrypting and so $Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[{\color{Red} K} = M \oplus C] $
     1. To evaluate the probability that a randomly selected key will successfully decrypt the ciphertext, we recall that ${\color{Red} K} \in \\{0,1\\}^n$
     1. And so, since there are $2^n$ possible keys, we can determine that $Pr[{\color{Red} K} = M \oplus C] = \frac{1}{2^n} $
@@ -202,16 +200,41 @@ The limitation of the OneTimePad is that it requires a secret key of a length ju
 
 {{< img src="module1-0016.png" alt="Shannon's Thereom, the OneTimePad is optimum" class="border-0" >}}
 
-The Shannon Theorem says that the OneTimePad's limitation of a secret key just as long as the message is unavoidable for perfect secrecy. Let's prove this:
+Shannon's Theorem says that the OneTimePad's limitation of a secret key just as long as the message is unavoidable for perfect secrecy. Let's prove this. Recall that for Shannon Secrecy, we must have:
 
-1. Let's assume a keyspace smaller than the message space, i.e $KeySp < MsgSp$
-1. Let's select a specific message $M_1$, and a secret key ${\color{Red} K_1}$ and compute the ciphertext specific cyphertext $C = \varepsilon({\color{Red} K}, M_1)$.
-1. Thus we, know the probability that some key encrypts $M_1$ to $C_1$ is non-zero, because we know that ${\color{Red} K_1}$ exists, i.e. $Pr[\varepsilon({\color{Red} K},M_1 ) = C] > 0$.
-1. Now, since we know the that the keyspace is smaller than the message space, let's assume that there exists some message $M_2$ that cannot be encrypted to the same ciphertext $C$, i.e. $Pr[\varepsilon({\color{Red} K},M_2 ) = C] = 0$
-1. With last two statements combined, we realize that for we can no longer map any two messages onto the same ciphertext, i.e $Pr[\varepsilon({\color{Red} K},M_1 ) = C] \neq Pr[\varepsilon({\color{Red} K},M_2 ) = C]$
-1. And so we have proven that if the keyspace is smaller than the message space, we will not have perfect secrecy.
+$$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$$
 
-This implies that the keyspace should at least as large as the message space.
+Where:
+
+* ${\color{Red} K}$ is a randomly chosen secret keys in the keyspace
+* $M_1$ and $M_2$ are any two messages in the message space, and
+* $C$ is a single chosen cipher in the cipher space
+
+We're going to be proving Shannon's Theorem **[by contradiction](https://en.wikipedia.org/wiki/Proof_by_contradiction).** What we'll actually do is _disprove_ that it's possible to have a Shannon Secure symmetric encryption scheme where the size of the keyspace is _smaller_ than that of the message space.
+
+Let's calculate the left hand-side of the perfect secrecy equation:
+
+1. Let's assume a keyspace smaller than the message space, i.e $|KeySp| < |MsgSp|$
+1. Let's select a specific message $M_1$, and a secret key ${\color{Red} K_1}$ and compute the ciphertext $C = \varepsilon({\color{Red} K}, M_1)$.
+1. Thus we, know the probability that some key encrypts $M_1$ to $C_1$ is non-zero, because we quite literally computed the ciphertext ourselves, and so at-least one key works. and with that we have our first equation: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] < 0$.
+1. And so we have the equation for our left-hand side: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] < 0$.
+
+Now let's setup the right-hand side of the equation, this is based on an assumption there exists a message $M_2 \in MsgSp$ that can not be decrypted by any key ${\color{Red} K} \in KeySp$:
+
+1. Let's assume for a moment that there exists some ciphertext $C$ that cannot be decrypted to the same message $M_2$, i.e. $Pr[\mathcal{D}({\color{Red} K}, C ) = M_2] = 0$
+1. By the correctness requirement of symmetric encryption scheme, any message that decrypts must also encrypt. If our assumption doesn't decrypt, it must not encrypt either, and so $Pr[\varepsilon({\color{Red} K}, M_2 ) = C] = 0$
+1. And so we have the euqation for our right-hand side: $Pr[\varepsilon({\color{Red} K},M_2 ) = C] = 0$
+
+Now, we we combine those two equations we realize that our assumption doesn't work out:
+
+1. If: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] > 0$
+1. And: $Pr[\varepsilon({\color{Red} K},M_2 ) = C] = 0$
+2. Then: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] \neq Pr[\varepsilon({\color{Red} K},M_2 ) = C]$
+1. But Shannon Secrecy requires: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$
+
+This implies that our assumption about there existing a message $M_2 \in MsgSp$ that cannot be decrypted by any key ${\color{Red} K} \in KeySp$ was incorrect. Meaning that for every $M_2 \in MsgSp$, there is in fact a key ${\color{Red} K} \in KeySp$ that can decrypt it. And so, there are at least as many keys in the keyspace as there are messages in the message space, i.e. $|KeySp| \geq |MsgSp|$
+
+**In summary**, we learned that if we pretend that some Shannon Secure symmetric-encryption schemes have some valid keys that can't decrypt some valid messages, the math won't work out.
 
 ## L12: Lesson 1 Summary 
 
