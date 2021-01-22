@@ -16,4 +16,5 @@
   {{ $indexProd := $index | resources.Minify | resources.Fingerprint "sha512" -}}
   <script src="{{ $jsProd.Permalink }}" integrity="{{ $jsProd.Data.Integrity }}" crossorigin="anonymous" defer></script>
   <script src="{{ $indexProd.Permalink }}" integrity="{{ $indexProd.Data.Integrity }}" crossorigin="anonymous" defer></script>
+  <script data-goatcounter="https://amingilani.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 {{ end -}}
