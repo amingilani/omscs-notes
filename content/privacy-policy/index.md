@@ -20,7 +20,7 @@ __TLDR__: I do not use cookies and we do not collect any personal data.
 
 ### Information collected and what we use it for
 
-I run [GoatCounter](https://www.goatcounter.com/) analytics on omscs.gilani.me. According to the [docs](https://www.goatcounter.com/privacy), following information is collected:
+I run [GoatCounter](https://www.goatcounter.com/) analytics on omscs.gilani.me. According to the [docs](https://www.goatcounter.com/privacy:
 
 
 >The following information is collected:
