@@ -124,7 +124,7 @@ For now, let's learn the syntax of a symmetric encryption scheme. All symmetric 
 
 * **The message space:** $MsgSp$ — This describes the limit of the message we can encrypt. For many schemes, this is a set of all bit strings, or a bit string of a specific length, e.g. 120 bits
 * **The key generation algorithm:** $K$, this describes how it is that we determine the key for encryption. However, in many algorithms, the key may be as simple as a random number from a keyspace $KeySp$.
-* **The encryption algorithm:** $\varepsilon$
+* **The encryption algorithm:** $\mathcal{E}$
 * **The decryption algorithm:** $\mathcal{D}$
 
 ## L7: Key Generation Algorithm 
@@ -135,7 +135,7 @@ Usually the key generation algorithm $K$ is a randomized algorithm, so we feed i
 
 We're only discussing the inputs and outputs of the algorithms for now, and so:
 
-* **To encrypt a message** — the sender will run the encryption algorithm $\varepsilon$ that produces a cipher text $C$. The inputs for $\varepsilon$ are:
+* **To encrypt a message** — the sender will run the encryption algorithm $\mathcal{E}$ that produces a cipher text $C$. The inputs for $\mathcal{E}$ are:
     * The shared secret key ${\color{Red} K}$
     * The message $M$ such that $M ∈ MsgSp$
     * One last input to ensure that the same ${\color{Red} K}$, and $M$ don't map to the same output. This may be:
@@ -145,7 +145,7 @@ We're only discussing the inputs and outputs of the algorithms for now, and so:
     * The shared secret key ${\color{Red} K}$
     * The ciphertext $C$.
 
-For an encryption scheme to be useful, it should ensure that for combination of valid messages, and keys, we should be able to encrypt and decrypt the original message back. Or more formally, for all $M \in MsgSp$ and ${\color{Red} K} ∈ KeySp$, ensure that $\mathcal{D} ({\color{Red} K},\varepsilon({\color{Red} K},M)) = M$.
+For an encryption scheme to be useful, it should ensure that for combination of valid messages, and keys, we should be able to encrypt and decrypt the original message back. Or more formally, for all $M \in MsgSp$ and ${\color{Red} K} ∈ KeySp$, ensure that $\mathcal{D} ({\color{Red} K},\mathcal{E}({\color{Red} K},M)) = M$.
 
 ## L8: OneTimePad
 
@@ -155,7 +155,7 @@ The **OneTimePad** is the best-known encryption scheme in the world. It originat
 
 * The **Message Space** $\mathit{MsgSp}$, and the **Key Space** $\mathit{KeySp}$ are both a set of $n$ bit long strings, i.e. $ \mathit{MsgSp} = \mathit{KeySp} = \\{ 0 , 1 \\}^{n} $.
 * The **Key Generation algorithm** $\kappa$ selects a random $n$ bit long string ${\color{Red} K}$, where $n$ is the same bit length as the message $M$.
-* The **Encryption Algorithm** $\varepsilon$ operates by applying exclusive or (XOR) to the message and the key to produce the ciphertext $C$, i.e. $\varepsilon({\color{Red} K}, M) : C \leftarrow M \oplus {\color{Red} K}\ \mathrm{return}\ C$
+* The **Encryption Algorithm** $\mathcal{E}$ operates by applying exclusive or (XOR) to the message and the key to produce the ciphertext $C$, i.e. $\mathcal{E}({\color{Red} K}, M) : C \leftarrow M \oplus {\color{Red} K}\ \mathrm{return}\ C$
 * The **Decryption Algorithm** $\mathcal{D}$ operates by XOR-ing the ciphertext and the key to produce the message back again, i.e. $\mathcal{D}({\color{Red} K}, C) : M \leftarrow C \oplus {\color{Red} K}\ \mathrm{return}\ M$
 
 It is important that the key is only used once, and so you need a new key to encrypt a new message, or you need a very long key so you can use different chunks to encrypt different messages. But you can never reuse the same key for different messages.
@@ -170,7 +170,7 @@ The first formal definition of security was proposed by Claude Shannon, known as
 
 That is to say, for any given ciphertext it is just as likely that it is one message, than it is another message if the key is unknown. This captures the intuition that ciphertexts leaks no information, since it is impossible to ascertain the contents of the message. More formally, though, this may be represented as:
 
-$$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$$
+$$Pr[\mathcal{E}({\color{Red} K},M_1 ) = C] = Pr[\mathcal{E}({\color{Red} K},M_2 ) = C]$$
 
 Where:
 
@@ -188,8 +188,8 @@ Let's prove that the OneTimePad is Perfectly/Shannon Secure.
 Recall, that we need prove that it is likely that any ciphertext can be any message for a variable key. Let's work through this step-by-step
 
 1. Let's select a ciphertext specific ciphertext $C$, and a specific message $M$. For the OneTimePad we know that $C \in \\{0,1\\}^n$ and $M\in \\{0,1\\}^n$
-1. Let's now determine the probability that a randomly selected key ${\color{Red} K}$ will successfully encrypt the message into the ciphertext, i.e  $Pr[\varepsilon({\color{Red} K},M_1 ) = C]$:
-    1. Due to the way the OneTimePad scheme operates, we know that the probability of the key encrypting, is the same as the probability of the same key decrypting and so $Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[{\color{Red} K} = M \oplus C] $
+1. Let's now determine the probability that a randomly selected key ${\color{Red} K}$ will successfully encrypt the message into the ciphertext, i.e  $Pr[\mathcal{E}({\color{Red} K},M_1 ) = C]$:
+    1. Due to the way the OneTimePad scheme operates, we know that the probability of the key encrypting, is the same as the probability of the same key decrypting and so $Pr[\mathcal{E}({\color{Red} K},M_1 ) = C] = Pr[{\color{Red} K} = M \oplus C] $
     1. To evaluate the probability that a randomly selected key will successfully decrypt the ciphertext, we recall that ${\color{Red} K} \in \\{0,1\\}^n$
     1. And so, since there are $2^n$ possible keys, we can determine that $Pr[{\color{Red} K} = M \oplus C] = \frac{1}{2^n} $
 1. With this, we have proven that for any ciphertext $C$ and messages $M_1$ and $M_2$, the probability of the either message $M_1$ or $M_2$ being encrypted to $C$ using an unknown key ${\color{Red} K}$ is equal.
@@ -202,7 +202,7 @@ The limitation of the OneTimePad is that it requires a secret key of a length ju
 
 Shannon's Theorem says that the OneTimePad's limitation of a secret key just as long as the message is unavoidable for perfect secrecy. Let's prove this. Recall that for Shannon Secrecy, we must have:
 
-$$Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$$
+$$Pr[\mathcal{E}({\color{Red} K},M_1 ) = C] = Pr[\mathcal{E}({\color{Red} K},M_2 ) = C]$$
 
 Where:
 
@@ -215,22 +215,22 @@ We're going to be proving Shannon's Theorem **[by contradiction](https://en.wiki
 Let's calculate the left hand-side of the perfect secrecy equation:
 
 1. Let's assume a keyspace smaller than the message space, i.e $|KeySp| < |MsgSp|$
-1. Let's select a specific message $M_1$, and a secret key ${\color{Red} K_1}$ and compute the ciphertext $C = \varepsilon({\color{Red} K}, M_1)$.
-1. Thus we, know the probability that some key encrypts $M_1$ to $C_1$ is non-zero, because we quite literally computed the ciphertext ourselves, and so at-least one key works. and with that we have our first equation: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] < 0$.
-1. And so we have the equation for our left-hand side: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] < 0$.
+1. Let's select a specific message $M_1$, and a secret key ${\color{Red} K_1}$ and compute the ciphertext $C = \mathcal{E}({\color{Red} K}, M_1)$.
+1. Thus we, know the probability that some key encrypts $M_1$ to $C_1$ is non-zero, because we quite literally computed the ciphertext ourselves, and so at-least one key works. and with that we have our first equation: $Pr[\mathcal{E}({\color{Red} K},M_1 ) = C] < 0$.
+1. And so we have the equation for our left-hand side: $Pr[\mathcal{E}({\color{Red} K},M_1 ) = C] < 0$.
 
 Now let's setup the right-hand side of the equation, this is based on an assumption there exists a message $M_2 \in MsgSp$ that can not be decrypted by any key ${\color{Red} K} \in KeySp$:
 
 1. Let's assume for a moment that there exists some ciphertext $C$ that cannot be decrypted to the same message $M_2$, i.e. $Pr[\mathcal{D}({\color{Red} K}, C ) = M_2] = 0$
-1. By the correctness requirement of symmetric encryption scheme, any message that decrypts must also encrypt. If our assumption doesn't decrypt, it must not encrypt either, and so $Pr[\varepsilon({\color{Red} K}, M_2 ) = C] = 0$
-1. And so we have the euqation for our right-hand side: $Pr[\varepsilon({\color{Red} K},M_2 ) = C] = 0$
+1. By the correctness requirement of symmetric encryption scheme, any message that decrypts must also encrypt. If our assumption doesn't decrypt, it must not encrypt either, and so $Pr[\mathcal{E}({\color{Red} K}, M_2 ) = C] = 0$
+1. And so we have the euqation for our right-hand side: $Pr[\mathcal{E}({\color{Red} K},M_2 ) = C] = 0$
 
 Now, we we combine those two equations we realize that our assumption doesn't work out:
 
-1. If: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] > 0$
-1. And: $Pr[\varepsilon({\color{Red} K},M_2 ) = C] = 0$
-2. Then: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] \neq Pr[\varepsilon({\color{Red} K},M_2 ) = C]$
-1. But Shannon Secrecy requires: $Pr[\varepsilon({\color{Red} K},M_1 ) = C] = Pr[\varepsilon({\color{Red} K},M_2 ) = C]$
+1. If: $Pr[\mathcal{E}({\color{Red} K},M_1 ) = C] > 0$
+1. And: $Pr[\mathcal{E}({\color{Red} K},M_2 ) = C] = 0$
+2. Then: $Pr[\mathcal{E}({\color{Red} K},M_1 ) = C] \neq Pr[\mathcal{E}({\color{Red} K},M_2 ) = C]$
+1. But Shannon Secrecy requires: $Pr[\mathcal{E}({\color{Red} K},M_1 ) = C] = Pr[\mathcal{E}({\color{Red} K},M_2 ) = C]$
 
 This implies that our assumption about there existing a message $M_2 \in MsgSp$ that cannot be decrypted by any key ${\color{Red} K} \in KeySp$ was incorrect. Meaning that for every $M_2 \in MsgSp$, there is in fact a key ${\color{Red} K} \in KeySp$ that can decrypt it. And so, there are at least as many keys in the keyspace as there are messages in the message space, i.e. $|KeySp| \geq |MsgSp|$
 
