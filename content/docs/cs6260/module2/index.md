@@ -33,7 +33,7 @@ After these, we'll discuss the definition of security for the crypto goal in que
 
 ### Symmetric Encryption Scheme
 
-{{< img src="module1-0001.png" alt="Symmetric-key Encryption Scheme Illustrated" class="border-0" >}}
+{{< img src="module2-0001.png" alt="Symmetric-key Encryption Scheme Illustrated" class="border-0" >}}
 
 Recall the syntax of a symmetric encryption scheme. Any symmetric encryption scheme is specified the key generation algorithm, the encryption algorithm, and the decryption algorithm, i.e. $\mathcal{SE}(\mathcal{K}, \mathcal{E}, \mathcal{D})$ or, usually, if the key generation algorithm is simply about picking a random number from a key space, $\mathcal{SE}(\mathcal{KeySp}, \mathcal{E}, \mathcal{D})$. In more detail:
 
@@ -47,7 +47,7 @@ This is just a primitive of a symmetric encryption scheme and does not say anyth
 
 ## L2
 
-{{< img src="module1-0002.png" alt="Symmetric-key Encryption Scheme more details" class="border-0" >}}
+{{< img src="module2-0002.png" alt="Symmetric-key Encryption Scheme more details" class="border-0" >}}
 
 Recall that a common **key generation algorithm** is to pick a random string from a key space ${\color{Red} K} \in \mathcal{KeySp}$. A very common key space is a set of fixed-length bit strings, of some length $k$ i.e. 
 $\\{0, 1\\}^k$. In such a case, the key generation function is specified by the key space, for the encryption scheme and it is assumed that the key is picked at random, i.e. $\mathcal{SE}(\mathcal{KeySp}, \mathcal{E}, \mathcal{D})$.
@@ -61,7 +61,7 @@ We will see examples of stateful encryption schemes soon.
 
 ## L3: Blockciphers
 
-{{< img src="module1-0003.png" alt="Blockcipher illustrated" class="border-0" >}}
+{{< img src="module2-0003.png" alt="Blockcipher illustrated" class="border-0" >}}
 
 A blockcipher is usually written as two words: block cipher, but the lectures use one word. The [Intro to Information Security](http://omscs.gatech.edu/cs-6035-introduction-to-information-security) course teaches us what blockciphers are, but knowing them isn't required. DES, 3DES, and AES are specific blockciphers.
 
@@ -83,3 +83,35 @@ Finally, each blockcipher has an **inverse** that can be denoted $E_{\color{Red}
 
 * You can decrypt and encrypt a ciphertext and it'll stay unmodified, i.e. $E_{\color{Red} K}(E_{\color{Red} K}^{-1}(C)) = C$
 * You can encrypt and decrypt a message and it'll stay unmodified, i.e. $E_{\color{Red} K}^{-1}(E_{\color{Red} K}(M)) = M$
+
+## L4: Blockcipher modes of operation 
+
+For now we assume that we have a _good_ blockcipher. We'll discuss what a "good" blockcipher is exactly in the future. Blockciphers encrypt short strings but, in practice, we want to encrypt long strings. The most obvious way is to break our message into blocks and encrypt block-by-block, using the blockcipher for each block. For simplicity, let's assume the message space consists of messages whose length is a multiple of the block length, but even if this isn't true, we can pad the message.
+
+## L5: Electronic Code Book mode
+
+{{< img src="module2-0005.png" alt="Blockcipher illustrated" class="border-0" >}}
+
+The method we discussed in the previous lecture will be discussed here in more detail. It is indeed the most obvious way, and it's called the Electronic Code Book. Let's say we have a blockcipher $E : \\{0,1\\}^k \times \\{0,1\\}^n \rightarrow \\\{0,1\\}^n$, then the electronic code book is simply defined using a set of functions $ECB = \\{0,1\\}^k, \mathcal{E}, \mathcal{D})$. Let's explore these:
+
+ * **The keyspace** $\\{0,1\\}^k$: is exactly the keyspace of the underlying blockcipher, and from here we select a key ${\color{Red} K}$.
+ * **The encryption algoritm** $\mathcal{E}$: Here's how we encrypt a message $M$ to a ciphertext $C$
+    1. We break apart the message $M$ into $n$-bit strings, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+    1. For each $n$-bit string we apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ and concatenate them, i.e $C \leftarrow (E_{\color{Red} K}(M_1) \rightarrow C_1 \mathbin\Vert E_{\color{Red} K}(M_2) \rightarrow C_2 \mathbin\Vert \ldots \mathbin\Vert  E_{\color{Red} K}(M_m) \rightarrow C_m)$
+* **The decryption algoritm** $\mathcal{D}$: Here's how we decrypt a ciphertext $C$ to a message $M$
+    1.  We break apart the message $C$ into $n$-bit strings, i.e. $C \leftarrow (C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+    1. For each $n$-bit string we apply the underlying blockcipher decryption algorithm $E_{\color{Red} K}^{-1}$ and concatenate them, i.e $M \leftarrow (E_{\color{Red} K}^{-1}(C_1) \rightarrow M_1  \mathbin\Vert E_{\color{Red} K}^{-1}(C_2) \rightarrow M_2  \mathbin\Vert \ldots \mathbin\Vert  E_{\color{Red} K}^{-1}(C_m) \rightarrow M_m )$
+
+By the properties of the blockcipher, this encryption scheme is correct, and so if you encrypt any message, and decrypt it, you will get the original message, i.e. $\mathcal{D}(\mathcal{E}({\color{Red} K},M)) = M$
+
+For the pseudocode of this encryption scheme, refer to the lecture notes[^bellare-rogaway]
+
+ECB can't be Shannon Secure: One short key is being used to encrypt multiple chunks of long messages. While we haven't studied anything but Shannon Security yet, we can use intuition at this point: even if you don't know the keys or the message, and even thought the underlying blockchiper is secure, the ECB's weakness is that if some chunks of messages, are repeated then by the properties of the blockcipher, the ciphertext of that chunk will also be the same. i.e if $M_a = M_b$ then $C_a = C_b$. That is some leakage of information. How bad that is in practice is up to the application of the cipher, but as cryptogrophers we **don't want any leakage of information**. We'll analyze this scheme formally later.
+
+[^bellare-rogaway]: Lecture notes: [_Introduction to Modern Cryptography_](https://www.cc.gatech.edu/~aboldyre/teaching/LectureNotes.pdf) by Mihir Bellare and Phillip Rogaway
+
+## L6: Encrypting an Image with EBC
+
+{{< img src="module2-0006.png" alt="ECB leakage illustrated with an image" class="border-0" >}}
+
+This is an illustration of leakage when the same results in the same ciphertext. Even though the image is not the same, we can still tell what the image is by looking at the result.
