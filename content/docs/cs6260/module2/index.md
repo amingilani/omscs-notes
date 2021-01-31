@@ -97,16 +97,16 @@ The method we discussed in the previous lecture will be discussed here in more d
  * **The keyspace** $\\{0,1\\}^k$: is exactly the keyspace of the underlying blockcipher, and from here we select a key ${\color{Red} K}$.
  * **The encryption algoritm** $\mathcal{E}$: Here's how we encrypt a message $M$ to a ciphertext $C$
     1. We break apart the message $M$ into $n$-bit strings, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
-    1. For each $n$-bit string we apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ and concatenate them, i.e $C \leftarrow (E_{\color{Red} K}(M_1) \rightarrow C_1 \mathbin\Vert E_{\color{Red} K}(M_2) \rightarrow C_2 \mathbin\Vert \ldots \mathbin\Vert  E_{\color{Red} K}(M_m) \rightarrow C_m)$
+    1. For each $n$-bit string we apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ and concatenate them, i.e.$C \leftarrow (E_{\color{Red} K}(M_1) \rightarrow C_1 \mathbin\Vert E_{\color{Red} K}(M_2) \rightarrow C_2 \mathbin\Vert \ldots \mathbin\Vert  E_{\color{Red} K}(M_m) \rightarrow C_m)$
 * **The decryption algoritm** $\mathcal{D}$: Here's how we decrypt a ciphertext $C$ to a message $M$
     1.  We break apart the message $C$ into $n$-bit strings, i.e. $C \leftarrow (C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
-    1. For each $n$-bit string we apply the underlying blockcipher decryption algorithm $E_{\color{Red} K}^{-1}$ and concatenate them, i.e $M \leftarrow (E_{\color{Red} K}^{-1}(C_1) \rightarrow M_1  \mathbin\Vert E_{\color{Red} K}^{-1}(C_2) \rightarrow M_2  \mathbin\Vert \ldots \mathbin\Vert  E_{\color{Red} K}^{-1}(C_m) \rightarrow M_m )$
-
-By the properties of the blockcipher, this encryption scheme is correct, and so if you encrypt any message, and decrypt it, you will get the original message, i.e. $\mathcal{D}(\mathcal{E}({\color{Red} K},M)) = M$
+    1. For each $n$-bit string we apply the underlying blockcipher decryption algorithm $E_{\color{Red} K}^{-1}$ and concatenate them, i.e.$M \leftarrow (E_{\color{Red} K}^{-1}(C_1) \rightarrow M_1  \mathbin\Vert E_{\color{Red} K}^{-1}(C_2) \rightarrow M_2  \mathbin\Vert \ldots \mathbin\Vert  E_{\color{Red} K}^{-1}(C_m) \rightarrow M_m )$
 
 For the pseudocode of this encryption scheme, refer to the lecture notes[^bellare-rogaway]
 
-ECB can't be Shannon Secure: One short key is being used to encrypt multiple chunks of long messages. While we haven't studied anything but Shannon Security yet, we can use intuition at this point: even if you don't know the keys or the message, and even thought the underlying blockchiper is secure, the ECB's weakness is that if some chunks of messages, are repeated then by the properties of the blockcipher, the ciphertext of that chunk will also be the same. i.e if $M_a = M_b$ then $C_a = C_b$. That is some leakage of information. How bad that is in practice is up to the application of the cipher, but as cryptogrophers we **don't want any leakage of information**. We'll analyze this scheme formally later.
+**Is this scheme correct?** Yes. By the properties of the blockcipher, this encryption scheme is correct, and so if you encrypt any message, and decrypt it, you will get the original message, i.e. $\mathcal{D}(\mathcal{E}({\color{Red} K},M)) = M$
+
+**Is this scheme secure?** ECB can't be Shannon Secure: One short key is being used to encrypt multiple chunks of long messages. While we haven't studied anything but Shannon Security yet, we can use intuition at this point: even if you don't know the keys or the message, and even thought the underlying blockchiper is secure, the ECB's weakness is that if some chunks of messages, are repeated then by the properties of the blockcipher, the ciphertext of that chunk will also be the same. i.e.if $M_a = M_b$ then $C_a = C_b$. That is some leakage of information. How bad that is in practice is up to the application of the cipher, but as cryptogrophers we **don't want any leakage of information**. We'll analyze this scheme formally later.
 
 [^bellare-rogaway]: Lecture notes: [_Introduction to Modern Cryptography_](https://www.cc.gatech.edu/~aboldyre/teaching/LectureNotes.pdf) by Mihir Bellare and Phillip Rogaway
 
@@ -115,3 +115,119 @@ ECB can't be Shannon Secure: One short key is being used to encrypt multiple chu
 {{< img src="module2-0006.png" alt="ECB leakage illustrated with an image" class="border-0" >}}
 
 This is an illustration of leakage when the same results in the same ciphertext. Even though the image is not the same, we can still tell what the image is by looking at the result.
+
+## L7: Cipher-block Chaining: CBC mode
+
+{{< img src="module2-0007.png" alt="CBC function illustrated" class="border-0" >}}
+
+Let's say we have a blockcipher $E : \\{0,1\\}^k \times \\{0,1\\}^n \rightarrow \\\{0,1\\}^n$, then the CBC is simply defined using a set of functions $CBC = \\{0,1\\}^k, \mathcal{E}, \mathcal{D})$. Let's explore these:
+
+* **The keyspace** $\\{0,1\\}^k$: is exactly the keyspace of the underlying blockcipher, and from here we select a key ${\color{Red} K}$.
+* **The encryption algoritm** $\mathcal{E}$: Here's how we encrypt a message $M$ to a ciphertext $C$
+  1. We pick a random $n$-bit string and take it as the initialization vector $IV$, i.e.$IV \xleftarrow{$} \\{0,1\\}^n$, _note the new syntax for a random pick._
+  1. We break apart the message $M$ into $n$-bit strings into message blocks, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+  1. For the first message block $M_1$, we XOR it with the $IV$, apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ and get the first cipher block $C_1$, i.e.$C_1 \leftarrow E_{\color{Red} K}(M_1 \oplus IV)$
+  1. For each subsequent message block string we XOR them with the previous cipher block and apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ to get their corresponding cipher block, i.e.$C_i \leftarrow E_{\color{Red} K}(M_i \oplus C_{i-1})$
+  1. Finally, we concatenate the initialization vector with the ciphertexts of the messages in sequential order to produce the final ciphertext, i.e.$C \leftarrow (IV \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+* **The decryption algoritm** $\mathcal{D}$: Here's how we decrypt a ciphertext $C$ to a message $M$
+  1.  We break apart the message $C$ into $n$-bit strings, and we take the first string as the initialization vector $IV$ i.e. $C \leftarrow ( IV \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+  1. For the first cipher block $M_1$, we decrypt it with the underlying blockcipher decryption algorithm $E_{\color{Red} K}^{-1}$ and XOR the result with the initialization vector to get original $M_1$, i.e.$M_1 \leftarrow E_{\color{Red} K}^{-1}(C_1) \oplus IV$
+  1. For each subsequent message cipher block we apply the underlying blockcipher decryption algorithm $E_{\color{Red} K}^{-1}$ and XOR the result with the previous cipher block to get their corresponding message block, i.e.$M_i \leftarrow E_{\color{Red} K}^{-1}(C_i) \oplus C_{i-1}$
+  1. Finally, we concatenate the message blocks in sequential order to produce the message, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+
+
+**Is this scheme correct?** Yes, due to the properties of the blockcipher, and the XOR operation, you can be sure the message you send will be the message you get back, i.e. $\mathcal{D}(\mathcal{E}({\color{Red} K},M)) = M$
+
+**Is this scheme secure?** Unlike the ECB, the same message block will no longer give the same ciphertext because of the random initalization vector and the chained XOR operation. A new $IV$ should be chosen_ at random for every encryption operation but there are no obvious flaws here. We'll revisit the security of this scheme at a later point. That said, it still can't be Shannon secure because we're using a single key short to encrypt multiple message blocks.
+
+
+
+## L8: Stateful Cipher-block Chaining mode
+
+{{< img src="module2-0008.png" alt="Stateful CBC function illustrated" class="border-0" >}}
+
+This scheme is very similar to the previous CBC scheme, the only difference is that instead of an initialization vector we'll use a sequential counter $ctr \in {0,1}^n$.
+
+**The scheme** is based on a blockcipher $E : \\{0,1\\}^k \times \\{0,1\\}^n \rightarrow \\\{0,1\\}^n$. With this, we can then define the CBC as a set of functions $CBC = \\{0,1\\}^k, \mathcal{E}, \mathcal{D})$. Let's explore these:
+
+* **The keyspace** $\\{0,1\\}^k$: is exactly the keyspace of the underlying blockcipher, and from here we select a key ${\color{Red} K}$.
+* **The encryption algoritm** $\mathcal{E}$: Here's how we encrypt a message $M$ to a ciphertext $C$
+  1. We set a counter $ctr$ which is initialized as a string of all zeroes, and increments by 1 on every encryption use and wraps around starting from 0 if it gets too big for the counter space. i.e. $ctr_i = ctr_{i-1} + (0^n-1 \mathbin\Vert  1)$ and $ctr_0 = \\{0\\}^n$ where $i$ is number of times the encryption function has been run, and the $+$ operation is performed modulus $n$.
+  1. We break apart the message $M$ into $n$-bit strings into message blocks, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+  1. For the first message block $M_1$, we XOR it with the $ctr$, apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ and get the first cipher block $C_1$, i.e.$C_1 \leftarrow E_{\color{Red} K}(M_1 \oplus ctr)$
+  1. For each subsequent message block string we XOR them with the previous cipher block and apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ to get their corresponding cipher block, i.e.$C_i \leftarrow E_{\color{Red} K}(M_i \oplus C_{i-1})$
+  1. Finally, we concatenate the counter with the ciphertexts of the messages in sequential order to produce the final ciphertext, i.e.$C \leftarrow (ctr \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+* **The decryption algoritm** $\mathcal{D}$: Here's how we decrypt a ciphertext $C$ to a message $M$
+  1.  We break apart the message $C$ into $n$-bit strings, and we take the first string as the counter $ctr$ i.e. $C \leftarrow ( ctr \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+  1. For the first cipher block $M_1$, we decrypt it with the underlying blockcipher decryption algorithm $E_{\color{Red} K}^{-1}$ and XOR the result with the counter to get original $M_1$, i.e.$M_1 \leftarrow E_{\color{Red} K}^{-1}(C_1) \oplus ctr$
+  1. For each subsequent message cipher block we apply the underlying blockcipher decryption algorithm $E_{\color{Red} K}^{-1}$ and XOR the result with the previous cipher block to get their corresponding message block, i.e.$M_i \leftarrow E_{\color{Red} K}^{-1}(C_i) \oplus C_{i-1}$
+  1. Finally, we concatenate the message blocks in sequential order to produce the message, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+
+
+**Is this scheme correct?** Yes, due to the properties of the blockcipher, and the XOR operation, you can be sure the message you send will be the message you get back, i.e. $\mathcal{D}(\mathcal{E}({\color{Red} K},M)) = M$
+
+**Is this scheme secure?** The attacker can learn and predict the counter since it's part of the ciphertext, but it may not lead to compromise of the data or the secret key. There may be other weaknesses that we will analyze later for this scheme, but for now let's move on.
+
+## L9: Randomized Counter Mode (CTR$)
+
+{{< img src="module2-0009.png" alt="Stateful CBC function illustrated" class="border-0" >}}
+
+This scheme is a bit different, there is no chaining, it's called a counter mode. This is a randomized version, and sometimes it's called the XOR-mode. Unlike CBC, and like EBC, this is parallelizable, and each block is encrypted independently. 
+
+**The primitive of the scheme** in practice is almost always a blockcipher, but doesn't _have_ to be. And so we use a new function family and notation $F : \\{0,1\\}^k \times \\{0,1\\}^l \rightarrow \\\{0,1\\}^L$. This function:
+* Has a key of the same length as we've been using before
+* Does *not* need the length of the input to match the length of the output
+* Does *not* need to be reversible, and therefore is not a permutation
+
+With this, we can then define CTR\\$ as a set of functions $CTR\\$ = \\{0,1\\}^k, \mathcal{E}, \mathcal{D})$. Let's explore these:
+
+* **The keyspace** $\\{0,1\\}^k$: is exactly the keyspace of the underlying function $F$ which may be a blockchiper, and from here we select a key ${\color{Red} K}$.
+* **The encryption algoritm** $\mathcal{E}$: Here's how we encrypt a message $M$ to a ciphertext $C$
+  1. We pick a random $l$-bit string $R \xleftarrow{$} \\{0,1\\}^n$
+  1. We break apart the message $M$ into $n$-bit strings into message blocks, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+  1. For each message block string we XOR it with the $F_{\color{Red} K}$ of $R$ incremented by the index of the message, i.e. $C_i \leftarrow F_{\color{Red} K}(R + i) \oplus M_i$, e.g. To calculate the first cipher block from the first message block, we do $C_1 \leftarrow F_{\color{Red} K}(R + 1) \oplus M_1$
+  1. Finally, we concatenate $R$ and the ciper blocks sequentially to form the ciphertext i.e.$C \leftarrow (R \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+* **The decryption algoritm** $\mathcal{D}$: Here's how we decrypt a ciphertext $C$ to a message $M$
+  1.  We break apart the message $C$ into $n$-bit strings, and we take the first string as the $R$ i.e. $C \leftarrow ( R \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+  1. For each cipher block string we XOR it with the $F_{\color{Red} K}$ of $R$ incremented by the index of the message, i.e. $M_i \leftarrow F_{\color{Red} K}(R + i) \oplus C_i$, e.g. To calculate the first message block from the first cipher block, we do $M_1 \leftarrow F_{\color{Red} K}(R + 1) \oplus C_1$
+  1. Finally, we concatenate the message blocks in sequential order to produce the message, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+
+Note that a reverse of $F$ was never needed, hence this function does not need to be a blockcipher.
+
+
+**Is this scheme correct?** Yes, due to $F$ being deterministic, and the properties of the XOR operation, you can be sure the message you send will be the message you get back, i.e. $\mathcal{D}(\mathcal{E}({\color{Red} K},M)) = M$
+
+**Is this scheme secure?** We'll analyze this soon.
+
+
+## L10: Stateful Counter Mode (CTRC)
+
+
+{{< img src="module2-0010.png" alt="Stateful CBC function illustrated" class="border-0" >}}
+
+Now let's see a stateful variant of this mode. The only difference here is that instead of $R$ we use a stateful counter $ctr$.
+
+**The primitive of the scheme** in practice is almost always a blockcipher, but doesn't _have_ to be. And so we use a new function family and notation $F : \\{0,1\\}^k \times \\{0,1\\}^l \rightarrow \\\{0,1\\}^L$. This function:
+* Has a key of the same length as we've been using before
+* Does *not* need the length of the input to match the length of the output
+* Does *not* need to be reversible, and therefore is not a permutation
+
+With this, we can then define CTR\\$ as a set of functions $CTR\\$ = \\{0,1\\}^k, \mathcal{E}, \mathcal{D})$. Let's explore these:
+
+* **The keyspace** $\\{0,1\\}^k$: is exactly the keyspace of the underlying function $F$ which may be a blockchiper, and from here we select a key ${\color{Red} K}$.
+* **The encryption algoritm** $\mathcal{E}$: Here's how we encrypt a message $M$ to a ciphertext $C$
+  1. We set a counter $ctr$ which is initialized as a string of all zeroes, and increments by 1 on every encryption use and wraps around starting from 0 if it gets too big for the counter space. i.e. $ctr_i = ctr_{i-1} + (0^n-1 \mathbin\Vert  1)$ and $ctr_0 = \\{0\\}^n$ where $i$ is number of times the encryption function has been run, and the $+$ operation is performed modulus $n$.
+  1. We break apart the message $M$ into $n$-bit strings into message blocks, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+  1. For each message block string we XOR it with the $F_{\color{Red} K}$ of $ctr$ incremented by the index of the message, i.e. $C_i \leftarrow F_{\color{Red} K}(R + i) \oplus M_i$, e.g. To calculate the first cipher block from the first message block, we do $C_1 \leftarrow F_{\color{Red} K}(R + 1) \oplus M_1$
+  1. Finally, we concatenate $ctr$ and the ciper blocks sequentially to form the ciphertext i.e.$C \leftarrow (R \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+* **The decryption algoritm** $\mathcal{D}$: Here's how we decrypt a ciphertext $C$ to a message $M$
+  1.  We break apart the message $C$ into $n$-bit strings, and we take the first string as the $ctr$ i.e. $C \leftarrow ( R \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
+  1. For each cipher block string we XOR it with the $F_{\color{Red} K}$ of $ctr$ incremented by the index of the message, i.e. $M_i \leftarrow F_{\color{Red} K}(R + i) \oplus C_i$, e.g. To calculate the first message block from the first cipher block, we do $M_1 \leftarrow F_{\color{Red} K}(R + 1) \oplus C_1$
+  1. Finally, we concatenate the message blocks in sequential order to produce the message, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
+
+Note that a reverse of $F$ was never needed, hence this function does not need to be a blockcipher. The receiver does not need to maintain the state, they can get it from the ciphertext, but the sender needs to maintain the state.
+
+
+**Is this scheme correct?** Yes, due to $F$ being deterministic, and the properties of the XOR operation, you can be sure the message you send will be the message you get back, i.e. $\mathcal{D}(\mathcal{E}({\color{Red} K},M)) = M$
+
+**Is this scheme secure?** We'll analyze this soon.
