@@ -124,7 +124,7 @@ Let's say we have a blockcipher $E : \\{0,1\\}^k \times \\{0,1\\}^n \rightarrow 
 
 * **The keyspace** $\\{0,1\\}^k$: is exactly the keyspace of the underlying blockcipher, and from here we select a key ${\color{Red} K}$.
 * **The encryption algoritm** $\mathcal{E}$: Here's how we encrypt a message $M$ to a ciphertext $C$
-  1. We pick a random $n$-bit string and take it as the initialization vector $IV$, i.e.$IV \xleftarrow{$} \\{0,1\\}^n$, _note the new syntax for a random pick._
+  1. We pick a random $n$-bit string and take it as the initialization vector $IV$, i.e.$IV \xleftarrow{\$} \\{0,1\\}^n$, _note the new syntax for a random pick._
   1. We break apart the message $M$ into $n$-bit strings into message blocks, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
   1. For the first message block $M_1$, we XOR it with the $IV$, apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ and get the first cipher block $C_1$, i.e.$C_1 \leftarrow E_{\color{Red} K}(M_1 \oplus IV)$
   1. For each subsequent message block string we XOR them with the previous cipher block and apply the underlying blockcipher encryption algorithm $E_{\color{Red} K}$ to get their corresponding cipher block, i.e.$C_i \leftarrow E_{\color{Red} K}(M_i \oplus C_{i-1})$
@@ -170,7 +170,7 @@ This scheme is very similar to the previous CBC scheme, the only difference is t
 
 ## L9: Randomized Counter Mode (CTR$)
 
-{{< img src="module2-0009.png" alt="Stateful CBC function illustrated" class="border-0" >}}
+{{< img src="module2-0009.png" alt="Randomized Counter Mode illustrated" class="border-0" >}}
 
 This scheme is a bit different, there is no chaining, it's called a counter mode. This is a randomized version, and sometimes it's called the XOR-mode. Unlike CBC, and like EBC, this is parallelizable, and each block is encrypted independently. 
 
@@ -183,7 +183,7 @@ With this, we can then define CTR\\$ as a set of functions $CTR\\$ = \\{0,1\\}^k
 
 * **The keyspace** $\\{0,1\\}^k$: is exactly the keyspace of the underlying function $F$ which may be a blockchiper, and from here we select a key ${\color{Red} K}$.
 * **The encryption algoritm** $\mathcal{E}$: Here's how we encrypt a message $M$ to a ciphertext $C$
-  1. We pick a random $l$-bit string $R \xleftarrow{$} \\{0,1\\}^n$
+  1. We pick a random $l$-bit string $R \xleftarrow{\$} \\{0,1\\}^n$
   1. We break apart the message $M$ into $n$-bit strings into message blocks, i.e. $M \leftarrow (M_1 \mathbin\Vert M_2 \mathbin\Vert \ldots \mathbin\Vert  M_m)$
   1. For each message block string we XOR it with the $F_{\color{Red} K}$ of $R$ incremented by the index of the message, i.e. $C_i \leftarrow F_{\color{Red} K}(R + i) \oplus M_i$, e.g. To calculate the first cipher block from the first message block, we do $C_1 \leftarrow F_{\color{Red} K}(R + 1) \oplus M_1$
   1. Finally, we concatenate $R$ and the ciper blocks sequentially to form the ciphertext i.e.$C \leftarrow (R \mathbin\Vert C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$
@@ -255,7 +255,7 @@ Oh, and we don't want anything _bad_ to happen. Even though we don't know what b
 
 Intuitively, we've covered all the basics, but this definition is still too informal. Let's try formalizing it.
 
-## L12: Indistinguishability
+## L12: Indistinguishability Part 1
 
 This is going to be the first practical definition of a cryptographical scheme. It's called Indistiguishability under Chosen Plaintext Attacks (IND-CPA). Let's discuss this informally first, and then we'll discuss it formally.
 
@@ -272,9 +272,9 @@ This is a game. You are the attacker $\mathcal{A}$. Imagine two rooms called Roo
 
 ### Formal Definition
 
-{{< img src="module2-0013.png" alt="Stateful CBC function illustrated" class="border-0" >}}
+{{< img src="module2-0013.png" alt="IND-CPA illustrated" class="border-0" >}}
 
-We fix an encryption scheme: $\mathcal{SE}(\mathcal{KeySp}, \mathcal{E}, \mathcal{D})$, ${\color{Red} K} \xleftarrow{$} \mathcal{KeySp}$ 
+We fix an encryption scheme: $\mathcal{SE}(\mathcal{KeySp}, \mathcal{E}, \mathcal{D})$, ${\color{Red} K} \xleftarrow{\$} \mathcal{KeySp}$ 
 
 For an adversary $\mathcal{A}$ and a bit ${\color{Red} b} \in \\{0, 1\\} $ consider an experiment ind-cpa-${\color{Red} b}$ i.e. ind-cpa-0 ("left") or ind-cpa-1 ("right").
 
@@ -301,4 +301,45 @@ In **IND-CPA-1**, the "right experiment", it goes:
 
 **To measure how well the attacker did** we define the IND-CPA Advantage for the attacker as the probability that the attacker was right in experiemnt 0 minus the probability that the attacker was wrong in experiment 1. i.e. $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
 
-A symmetric-encryption scheme is indistinguishable under chosen plaintext attacks, or IND-CPA secure, if for any adversary with "reasonable" resources the ind-cpa advanctage is "small", i.e. close to zero.
+A symmetric-encryption scheme is indistinguishable under chosen plaintext attacks, or IND-CPA secure, if for any adversary with "reasonable" resources the ind-cpa advantage is "small", i.e. close to zero.
+
+## L13: Indistinguishability Part 2
+
+{{< img src="module2-0013.png" alt="IND-CPA illustrated" class="border-0" >}}
+
+**Let's pretend that the attacker is terrible at this game**: The scheme may be really good, the attacker may not be smart, but in any case, the attacker can't guess correctly. Even then the attacker can guess at random, so let's say the attacker randomly outputs $ d \xleftarrow{\$} \\{0,1\\} $. Let's calculate the advantage of such an attacker:
+
+1. Recall that the advantage is measured as: $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
+1. Can we evaluate the probabilities of the attacker being correct and incorrect? Let's try:
+  + Since the attacker outputs their guess $d$ at random, they'll be correct **half the time**, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = \frac{1}{2}$
+  + Similarly, since attacker outputs their guess $d$ at random, they'll be incorrect **half the time**, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = \frac{1}{2}$
+1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = \frac{1}{2} - \frac{1}{2} = 0$.
+
+And so, a clueless attacker has no IND-CPA advantage.
+
+_If a terrible attacker has a low IND-CPA advantage, is the scheme IND-CPA secure?_ **No.** The security definition specifies "any adversary with 'reasonable' resources" must have a small IND-CPA advantage. You can't arbitrarily fix an attacker that isn't very smart.
+
+
+**Let's pretend that the attacker is very good at this game**: The scheme may be really bad, the attacker may really good, but in any case, the attacker can guess correctly. And the attacker always outputs $ d = {\color{Red} b} $. Let's calculate the advantage of such an attacker:
+
+1. Recall that the advantage is measured as: $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
+1. Can we evaluate the probabilities of the attacker being correct and incorrect? Let's try:
+  + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the tiem, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
+  + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
+1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = 1 - 0 = 1$.
+
+And so, an attacker that plays the game really well has an absolute IND-CPA advantage.
+
+## L14: Resources of an Adversary 
+
+{{< img src="module2-0014.png" alt="Resources of an Adversary " class="border-0" >}}
+
+The IND-CPA Advantage of an attacker is important, but as we saw before, simply using a bad attacker doesn't make a scheme IND-CPA secure.
+
+Attackers are just algorithms that we will design to attack and prove the security of schemes. However, to create an attacker with "reasonable" resources, we need "reasonable" resources. What are they? Let's discuss a few:
+
+* **Time-complexity**:  If you took an algorithms class, you know how to measure [running time](https://en.wikipedia.org/wiki/Time_complexity), this will be similar. Similarly to how we analyze the efficiency of algorithms, we'll calculate the time complexity using some fixed RAM model of computation. It is possible to have a fast attack at the price of a large and optimized codebase.  In these situations, we'll have to consider the max running time of the adversary while weighing it against the size of the codebase. However, our examples will have short attacker codes. Usually, the running time will be small, doing simple operations. We'll assume bit-operations like reading and XOR-ing a bit takes 1 unit of time. This way, we'll simply count how many basic operations we do. Note: For symmetric cryptography, all the attackers will be efficient and simple, but we'll get into the habit of calculating time-complexity anyways because public-key cryptography can have inefficient complexities—even for small code sizes.
+
+* **Number of queries made to the Oracle**: In symmetric encryption, it's the "left-right" oracle. In practice, it corresponds to how many message and ciphertext pairs ( i.e. set of $\mathcal{E}_{\color{Red} K}(M) \rightarrow C$ ) the attacker can see. We will discuss some attacks which are fast but require a large number of message and ciphertext pairs. Sometimes this number may be large, but that may be alright.
+
+* **Total lenght of queries** the attacker in practice can be fast, but if the message or ciphertext has a huge length, it may become difficult.
