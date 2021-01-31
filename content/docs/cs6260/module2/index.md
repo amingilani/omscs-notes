@@ -231,3 +231,74 @@ Note that a reverse of $F$ was never needed, hence this function does not need t
 **Is this scheme correct?** Yes, due to $F$ being deterministic, and the properties of the XOR operation, you can be sure the message you send will be the message you get back, i.e. $\mathcal{D}(\mathcal{E}({\color{Red} K},M)) = M$
 
 **Is this scheme secure?** We'll analyze this soon.
+
+## L11: What is a secure encryption scheme 
+
+We need a new definition of security. Shannon Security is great, but all these schemes fail for Shannon Security. We still want to be able to accept practical schemes, though, and that requires relaxing our definition of security a bit.
+
+We assume that attackers are computationally bounded and can't run forever. This is practical because otherwise our attackers can carry out an exhaustive key search (also known as a [brute-force attack](https://en.wikipedia.org/wiki/Brute-force_attack)) trying all the keys in the key space until they find the right one. We can fix this by having a large key space, and assuming that attackers can run for a very long time, but not forever.
+
+
+We also say a scheme is secure when a scheme isn't insecure. It's actually easier to define "insecure". Insecure means attackers can do _bad_ things like learning information. This begs the question—what information? Let's go through types of information and assess them:
+
++ **Compute the secret key**: This is obvious The secret key will allow them to decrypt all out communications past, present and future. But some books end the definition of security at the incalculability of the secret key. If you use that as your criteria you're going to have a bad time. What if my scheme is to send messages in plaintext? It's _terrible_ scheme but by having no secret key, there is no secret key to calculate—I win.
++ **Compute the full plaintexts**: This is much better. The full plaintext is very sensitive, but this definition still doesn't cover it. What if the attacker can computer the first bit bit of the plaintext? That's still incredibly bad.
++ **Compute the first bit of a plaintext**: This isn't enough either, what if the attacker can compute the last bit? Maybe we should say it's insecure if the attack can compute any bit of the plaintext.
++ **Compute the sum of the bits of a plaintext**: That's still leakage of information. It's not obviously harmful to us, but for some applications it may as well be.
++ **Can see when equal messages are encrypted**: This is also bad for some applications e.g. if an attacker successfully figures out the type of ciphertext that a hedge fund sends to trigger a `BUY` order, they can gain an unfair advantage.
+
+While we don't have a formal definition, we still have a good intuitive definition. We can say that no encryption scheme is secure if an attacker that sees several plaintexts can calculate more information about them than they knew a-priori. This definition allows for information that is generally known, or that they know before hand. An examples may include: The communication happens in English, if it is known that the parties speak English. This can also lead to other incidental information such as the distrution of the words and characters in the messages.
+
+Something we explicitly are okay leaking though is the length of the message. In practice, this is trivial to disguise by padding our message with extra characters, but we'll let this slide for now.
+
+Oh, and we don't want anything _bad_ to happen. Even though we don't know what bad is.
+
+Intuitively, we've covered all the basics, but this definition is still too informal. Let's try formalizing it.
+
+## L12: Indistinguishability
+
+This is going to be the first practical definition of a cryptographical scheme. It's called Indistiguishability under Chosen Plaintext Attacks (IND-CPA). Let's discuss this informally first, and then we'll discuss it formally.
+
+### Informal Definition
+
+This is a game. You are the attacker $\mathcal{A}$. Imagine two rooms called Room 0, and Room 1. Both are identical, unmarked and visibly indistinguishable from each other. Inside each room is a computer that implements an encryption scheme $E_{\color{Red} K}$ that you know, and a secret key ${\color{Red} K}$ that you do not know. You can only interact with passing a computers by a pair of messages $(M_0, M_1)$ both of the same length. The difference between the rooms is:
+
+* Room 0 encrypts $M_0$, returns $C_0$, and discard $M_1$
+* Room 1 encrypts $M_1$, returns $C_1$, and discard $M_0$
+
+**The challenge**: You job as the attacker is to enter a room and determine which number room is which. You can repeatedly enter as many rooms as you like.
+
+**The security definition**: The encryption scheme is secure if the attacker doesn't do a better job of guessing the right room than if they were doing so at random.
+
+### Formal Definition
+
+{{< img src="module2-0013.png" alt="Stateful CBC function illustrated" class="border-0" >}}
+
+We fix an encryption scheme: $\mathcal{SE}(\mathcal{KeySp}, \mathcal{E}, \mathcal{D})$, ${\color{Red} K} \xleftarrow{$} \mathcal{KeySp}$ 
+
+For an adversary $\mathcal{A}$ and a bit ${\color{Red} b} \in \\{0, 1\\} $ consider an experiment ind-cpa-${\color{Red} b}$ i.e. ind-cpa-0 ("left") or ind-cpa-1 ("right").
+
+In each experiment the attacker $\mathcal{A}$ is given access to a "left-right" encryption oracle that:
+
+1. The attacker passes to the oracle as input two messages of the same length: $(M_0, M_1)$
+1. The oracle selects one of the messages, depending on the value of the bit: $M_{\color{Red} b} \leftarrow LR(M_0, M_1, {\color{Red} b})$
+1. The oracle encrypts it for the chosen secret key and returns it: $\mathcal{E}_ {\color{Red} K} ( M_{\color{Red} b} )$
+1. The attacker computes and outputs $d$, which is a guess for what the value of ${\color{Red} b}$ is.
+
+In **IND-CPA-0**, the "left experiment", it goes:
+
+1. The attacker passes to the oracle as input two messages of the same length: $(M_0, M_1)$
+1. The oracle selects the left message: $M_0\leftarrow LR(M_0, M_1, 0)$
+1. The oracle encrypts it for the chosen secret key and returns it: $\mathcal{E}_ {\color{Red} K} ( M_0 )$
+1. The attacker computes and outputs $d$, which if correct will be $0$.
+
+In **IND-CPA-1**, the "right experiment", it goes:
+
+1. The attacker passes to the oracle as input two messages of the same length: $(M_0, M_1)$
+1. The oracle selects the right message: $M_1\leftarrow LR(M_0, M_1, 1)$
+1. The oracle encrypts it for the chosen secret key and returns it: $\mathcal{E}_ {\color{Red} K} ( M_1 )$
+1. The attacker computes and outputs $d$, which if correct will be $1$.
+
+**To measure how well the attacker did** we define the IND-CPA Advantage for the attacker as the probability that the attacker was right in experiemnt 0 minus the probability that the attacker was wrong in experiment 1. i.e. $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
+
+A symmetric-encryption scheme is indistinguishable under chosen plaintext attacks, or IND-CPA secure, if for any adversary with "reasonable" resources the ind-cpa advanctage is "small", i.e. close to zero.
