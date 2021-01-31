@@ -339,7 +339,20 @@ The IND-CPA Advantage of an attacker is important, but as we saw before, simply 
 Attackers are just algorithms that we will design to attack and prove the security of schemes. However, to create an attacker with "reasonable" resources, we need "reasonable" resources. What are they? Let's discuss a few:
 
 * **Time-complexity**:  If you took an algorithms class, you know how to measure [running time](https://en.wikipedia.org/wiki/Time_complexity), this will be similar. Similarly to how we analyze the efficiency of algorithms, we'll calculate the time complexity using some fixed RAM model of computation. It is possible to have a fast attack at the price of a large and optimized codebase.  In these situations, we'll have to consider the max running time of the adversary while weighing it against the size of the codebase. However, our examples will have short attacker codes. Usually, the running time will be small, doing simple operations. We'll assume bit-operations like reading and XOR-ing a bit takes 1 unit of time. This way, we'll simply count how many basic operations we do. Note: For symmetric cryptography, all the attackers will be efficient and simple, but we'll get into the habit of calculating time-complexity anyways because public-key cryptography can have inefficient complexities—even for small code sizes.
-
 * **Number of queries made to the Oracle**: In symmetric encryption, it's the "left-right" oracle. In practice, it corresponds to how many message and ciphertext pairs ( i.e. set of $\mathcal{E}_{\color{Red} K}(M) \rightarrow C$ ) the attacker can see. We will discuss some attacks which are fast but require a large number of message and ciphertext pairs. Sometimes this number may be large, but that may be alright.
+* **Total lengtt of queries** the attacker in practice can be fast, but if the message or ciphertext has a huge length, it may become difficult.
 
-* **Total lenght of queries** the attacker in practice can be fast, but if the message or ciphertext has a huge length, it may become difficult.
+
+## L15: How to prove a scheme is not secure 
+
+{{< img src="module2-0015.png" alt="How to prove a scheme is not secure" class="border-0" >}}
+
+How do we prove that a scheme is not secure? We need to set a critera for our proof:
+
+1. **The adversary $\mathcal{A}$**: This is the pseudocode for the algorithm that breaks the scheme according to the security definition in question. E.g. the attack algorithm we will see that breaks ECB for IND-CPA.
+1. **The IND-CPA Advange $\mathrm{Adv^{ind-cpa}}(\mathcal{A} )$**: For an insecure scheme this shouldn't be too close to zero, otherwise the scheme is secure. And for our purposes, "close to zero" is up to $2^{-60},$ i.e. $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) \leq \frac{1}{2^{60}}$ is secure, but anything above that is insecure. E.g. $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = \frac{1}{1000}$ is insecure
+1. **The adversary's resources** time-complexity, number of queries, number of bits transacted in queries: This should be "reasonable", e.g. $2^{60}$ is not reasonable. Most examples will have a reasonable number of queries though.
+
+If our proof meets all of the criteria above, we've proven that the scheme is *not* secure. If we do, it would violate the security definition we saw, and all we have to do is present a _single_ attacker that meets this criteria. Such an attacker would have a IND-CPA advantage not close to zero, with reasonable resources.
+
+Soon we'll write such a proof for the ECB scheme, but we'll do more and show that some of the 4 encryption schemes we saw and couldn't find the attacks will be broken formally. The definition will also help us prove the security of some schemes using a slightly different outline.
