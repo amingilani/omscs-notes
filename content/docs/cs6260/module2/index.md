@@ -110,7 +110,7 @@ For the pseudocode of this encryption scheme, refer to the lecture notes[^bellar
 
 [^bellare-rogaway]: Lecture notes: [_Introduction to Modern Cryptography_](https://www.cc.gatech.edu/~aboldyre/teaching/LectureNotes.pdf) by Mihir Bellare and Phillip Rogaway
 
-## L6: Encrypting an Image with EBC
+## L6: Encrypting an Image with ECB
 
 {{< img src="module2-0006.png" alt="ECB leakage illustrated with an image" class="border-0" >}}
 
