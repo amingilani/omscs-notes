@@ -22,15 +22,14 @@ __TLDR__: I do not use cookies and we do not collect any personal data.
 
 I run [GoatCounter](https://www.goatcounter.com/) analytics on omscs.gilani.me. According to the [docs](https://www.goatcounter.com/privacy:
 
-
 >The following information is collected:
 >
->    URL of the visited page.
->    Referer header.
->    User-Agent header.
->    Screen size.
->    Country name based on IP address.
->    A hash of the IP address, User-Agent, and random number.
+> URL of the visited page.
+> Referer header.
+> User-Agent header.
+> Screen size.
+> Country name based on IP address.
+> A hash of the IP address, User-Agent, and random number.
 >
 >No personal information (such as IP address) is collected; a hash of the IP address, User-Agent, and a random number (“salt”) is kept in the process memory for 8 hours at the most to identify a browsing session.
 >
