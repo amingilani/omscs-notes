@@ -373,7 +373,7 @@ Let's test our new IND-CPA definition on a toy example which we know is insecure
 
 + **The attacker $\mathcal{A}$**: The algorithm for the attack is as follows:
   1. We define an Adversary that attacks our encryption algorithm under the IND-CPA definition: $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))}$
-  1. We know that for the IND-CPA challenge, the encryption oracle will take an attacker's message inputs $M_0$ and $M_1$ and return a ciphertext $C$ based on the ${\color{Red} b}$ i.e. $ C \xleftarrow{\$} \mathcal{E}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))$, and that:
+  1. We know that for the IND-CPA challenge, the encryption oracle will take an attacker's message inputs $M_0$ and $M_1$ of the same length, and return a ciphertext $C$ based on the ${\color{Red} b}$ i.e. $ C \xleftarrow{\$} \mathcal{E}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))$, and that:
       * if ${\color{Red} b} = 1$ then $C = \mathcal{E}_{\color{Red} K}(M_1)$
       * if ${\color{Red} b} = 0$ then $C = \mathcal{E}_{\color{Red} K}(M_0)$
   1. With this in mind, if we pass the first message as as all zeroes and the second as all ones, i.e. $M_0 = (0)^n$ and $M_1 = (1)^n$ achieving $ C \leftarrow \mathcal{E}_{\color{Red} K}(LR((0)^n, (1)^n, {\color{Red} b}))$
@@ -410,7 +410,7 @@ Now let's look at another symmetric encryption scheme $\mathcal{SE}(\mathcal{Key
 **Is this scheme secure?** No. It feels more secure, as the last one, but it likely isn't, let's prove this:
 + **The attacker $\mathcal{A}$**: The algorithm for the attack is as follows:
   1. We define an Adversary that attacks our encryption algorithm under the IND-CPA definition: $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))}$
-  1. We know that for the IND-CPA challenge, the encryption oracle will take an attacker's message inputs $M_0$ and $M_1$ and return a ciphertext $C$ based on the ${\color{Red} b}$ i.e. $ C \xleftarrow{\$} \mathcal{E}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))$, and that:
+  1. We know that for the IND-CPA challenge, the encryption oracle will take an attacker's message inputs $M_0$ and $M_1$ of the same length, and return a ciphertext $C$ based on the ${\color{Red} b}$ i.e. $ C \xleftarrow{\$} \mathcal{E}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))$, and that:
       * if ${\color{Red} b} = 1$ then $C = \mathcal{E}_{\color{Red} K}(M_1)$
       * if ${\color{Red} b} = 0$ then $C = \mathcal{E}_{\color{Red} K}(M_0)$
   1. With this in mind, if we pass the first message as as all zeroes and the second as all ones, i.e. $M_0 = (0)^n$ and $M_1 = (1)^n$ achieving $ C \leftarrow \mathcal{E}_{\color{Red} K}(LR((0)^n, (1)^n, {\color{Red} b}))$
@@ -420,8 +420,8 @@ Now let's look at another symmetric encryption scheme $\mathcal{SE}(\mathcal{Key
 + **The IND-CPA Advantage**: Let's now evaluate the attacker's advantage:
   1. The advantage for the symmetric encryption scheme $\mathcal{SE}$ is put forth as: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
   1. Can we evaluate the probabilities of the attacker being correct and incorrect? Let's try:
-  + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the time, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
-  + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
+    + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the time, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
+    + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
   1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = 1 - 0 = 1$.
 + **The resources of the attacker**: We need to ensure that these are reasonable.
   + **The time-complexity** $t$: The attacker only compared one, so the time taken was the time to compare $1$-bit. _This is much more efficient than the last example_
@@ -432,3 +432,42 @@ Now let's look at another symmetric encryption scheme $\mathcal{SE}(\mathcal{Key
 
 *  If any bits of the message are leaked, the attacker can vary those bits in the two messages, and check the corresponding positions in the ciphertext. E.g. if the middle bits of the message appear in the last bits of the ciphertext, the attacker can vary those middle bits, and check the last bits of the ciphertext
 * If the scheme is such that it yields a function of all the bits, e.g. an XOR, the attacker will pick two messages such that the XOR of the bits is different for the two messages and when it gets the ciphertext will know which is which.
+
+## L18: Analysis of the ECB Mode 
+
+{{< img src="module2-0017.png" alt="How to prove a scheme is not secure" class="border-0" >}}
+
+We're ready to formally evaluate the security of ECB. Let's quickly evaluate how ECB operates. It uses an underlying blockcipher $E$, and the key is a set if bit-strings of length $k$. The encryption algorithm breaks down each block to fit the input length and encrypts it using $K$. The outputs are concatenated to make the ciphertext $C$.
+
+The questions we need to ask are:
+
++ **Is it a good encryption scheme?** We didn't originally have a good way to ask this question, but we do now. The question is now,
++ **Is this IND-CPA secure?** Can we design a proof under the criteria we set out?
+
+## L19: ECB is not IND-CPA 
+
+{{< img src="module2-0018-1.png" alt="How to prove a scheme is not secure" class="border-0" >}}
+
+**Is this scheme secure?** No, let's prove that the ECB is not IND-CPA secure using the IND-CPA security definition:
++ **The attacker $\mathcal{A}$**: We already know the problem with the ECB, it's that the same plaintext block will result in the same ciphertext block, i.e. $R_i[E_{\color{Red} K}(M) = C]$ where $R_i$ is a round of encryption. With this in mind, the algorithm for the attack is as follows:
+  1. We define an Adversary that attacks our encryption algorithm under the IND-CPA definition: $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))}$
+  1. We know that for the IND-CPA challenge, the encryption oracle will take an attacker's message inputs $M_0$ and $M_1$ of the same length, and return a ciphertext $C$ based on the ${\color{Red} b}$ i.e. $ C \xleftarrow{\$} \mathcal{E}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))$, and that:
+      * if ${\color{Red} b} = 1$ then $C = \mathcal{E}_{\color{Red} K}(M_1)$
+      * if ${\color{Red} b} = 0$ then $C = \mathcal{E}_{\color{Red} K}(M_0)$
+  1. **Now, let's use the ECB's weakness** to construct two messages:
+  1. Let's construct $M_0$ such that all the blocks are the same, this will result in the ciphertext having all the same blocks as well. We can pick any message that fits this criteria, but for this example, let's use $M_0 = (0)^2n$
+  1. Let's construct $M_1$ such that all the blocks are the same, this will result in the ciphertext having all the same blocks as well. We can pick any message that fits this criteria, but for this example, let's use half zero bits and half 1 bits, i.e M_1 = ($(0)^n \mathbin\Vert $(1)^n)$
+  1. We pass the messages we constructed in the last step to get $C$, i.e. $ C \leftarrow \mathcal{E}_{\color{Red} K}(LR((0)^2n, ((0)^n \mathbin\Vert (1)^n), {\color{Red} b}))$
+  1. We can simply run the following answer for $d$:
+          * If the ciphertext blocks are all equal, then return zero, i.e Where $C \leftarrow (C_1 \mathbin\Vert C_2 \mathbin\Vert \ldots \mathbin\Vert  C_m)$, if $(C_1 = C_2 = \ldots =  C_m)$  then return $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))} \Rightarrow d = 0$
+          * Otherwise, return one, i.e $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))} \Rightarrow d = 1$
++ **The IND-CPA Advantage**: Let's now evaluate the attacker's advantage:
+  1. The advantage for the symmetric encryption scheme $\mathcal{SE}$ is put forth as: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
+  1. Can we evaluate the probabilities of the attacker being correct and incorrect? Let's try:
+      + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the time, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
+      + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
+  1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = 1 - 0 = 1$.
++ **The resources of the attacker**: We need to ensure that these are reasonable.
+  + **The time-complexity** $t$: The attacker only compared two blocks, so the time taken was the time to compare $n$-bits.
+  + **The number of queries** $q$: There was only a single query, so $q = 1$
+  + **The length of the bits sent** $\mu$: We sent two bit-strings of length $n$, so $\mu = 2n$
