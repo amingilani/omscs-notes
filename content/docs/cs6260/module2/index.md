@@ -349,10 +349,42 @@ Attackers are just algorithms that we will design to attack and prove the securi
 
 How do we prove that a scheme is not secure? We need to set a critera for our proof:
 
-1. **The adversary $\mathcal{A}$**: This is the pseudocode for the algorithm that breaks the scheme according to the security definition in question. E.g. the attack algorithm we will see that breaks ECB for IND-CPA.
+1. **The attacker $\mathcal{A}$**: This is the pseudocode for the algorithm that breaks the scheme according to the security definition in question. E.g. the attack algorithm we will see that breaks ECB for IND-CPA.
 1. **The IND-CPA Advange $\mathrm{Adv^{ind-cpa}}(\mathcal{A} )$**: For an insecure scheme this shouldn't be too close to zero, otherwise the scheme is secure. And for our purposes, "close to zero" is up to $2^{-60},$ i.e. $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) \leq \frac{1}{2^{60}}$ is secure, but anything above that is insecure. E.g. $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = \frac{1}{1000}$ is insecure
 1. **The adversary's resources** time-complexity, number of queries, number of bits transacted in queries: This should be "reasonable", e.g. $2^{60}$ is not reasonable. Most examples will have a reasonable number of queries though.
 
 If our proof meets all of the criteria above, we've proven that the scheme is *not* secure. If we do, it would violate the security definition we saw, and all we have to do is present a _single_ attacker that meets this criteria. Such an attacker would have a IND-CPA advantage not close to zero, with reasonable resources.
 
 Soon we'll write such a proof for the ECB scheme, but we'll do more and show that some of the 4 encryption schemes we saw and couldn't find the attacks will be broken formally. The definition will also help us prove the security of some schemes using a slightly different outline.
+
+## L16: IND-CPA definition -- Example 1
+
+{{< img src="module2-0016-filled.png" alt="How to prove a scheme is not secure" class="border-0" >}}
+
+Let's test our new IND-CPA definition on a toy example which we know is insecure. If it works, we know our definition works. Let's take a symmetric encryption scheme $\mathcal{SE}(\mathcal{KeySp}, \mathcal{E}, \mathcal{D})$, and let's discuss the component algorithms:
+
+* **The key generation algorithm $\mathcal{K}$**: This honestly doesn't matter, it randomly picks a key out of any set, it could be an elephant, we don't care.
+* **The encryption algorithm $\mathcal{E}_{\color{Red} K}$**: This is a toy algorithm that takes a $M \in \mathcal{MsgSp}$ where $\mathcal{MsgSp} = \\{0,1\\}^n$ is a set containing all valid messages and outputs a surprise, $M$ as the ciphertext. In other words, it output the message you input in it. i.e. $\mathcal{E}_{\color{Red} K}(M) = M$. This message $M$ is transmitted over a potentially insecure channel and received by the receiver $\mathcal{R}$ that runs the decryption algorithm.
+* **The decryption algorithm $\mathcal{D}_{\color{Red} K}$**: This is a [deterministic](https://en.wikipedia.org/wiki/Deterministic_algorithm) algorithm that takes as inputs the ciphertext $C$ and returns the ciphertext back as the message. Yes, it's really bad. i.e $\mathcal{D}_{\color{Red} K}(C) = C$.
+
+**Is this scheme correct?** Yes. if you encrypt any message, and decrypt it, you will get the original message, i.e. $\mathcal{D_{\color{Red} K}}(\mathcal{E_{\color{Red} K}}(M)) = M$
+
+**Is this scheme secure?** Lol. Seriously? No. To prove this, we present three things:
+
++ **The attacker $\mathcal{A}$**: The algorithm for the attack is as follows:
+  1. We define an Adversary that attacks our encryption algorithm under the IND-CPA definition: $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))}$
+  1. We know that for the IND-CPA challenge, the encryption oracle will take an attacker's message inputs $M_0$ and $M_1$ and return a ciphertext $C$ based on the ${\color{Red} b}$ i.e. $ C \xleftarrow{\$} \mathcal{E}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))$, and that:
+      * if ${\color{Red} b} = 1$ then $C = \mathcal{E}_{\color{Red} K}(M_1)$
+      * if ${\color{Red} b} = 0$ then $C = \mathcal{E}_{\color{Red} K}(M_0)$
+  1. With this in mind, if we pass the first message as as all zeroes and the second as all ones, i.e. $M_0 = (0)^n$ and $M_1 = (1)^n$ achieving $ C \leftarrow \mathcal{E}_{\color{Red} K}(LR((0)^n, (1)^n, {\color{Red} b}))$
+  1. We can simply run the following answer for $d$:
+      * If $C = M_0 = (0)^n$ then return $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))} \Rightarrow d = 0$
+      * Otherwise return $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))} \Rightarrow d = 1$ because the only other possibility is $C = M_1 = (1)^n$
++ **The IND-CPA Advantage**: Let's now evaluate the attacker's advantage:
+  1. The advantage for the symmetric encryption scheme $\mathcal{SE}$ is put forth as: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
+  1. Can we evaluate the probabilities of the attacker being correct and incorrect? Let's try:
+  + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the tiem, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
+  + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
+  1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = 1 - 0 = 1$.
+
+  Let's evaluate the resources of the attacker in the next lecture
