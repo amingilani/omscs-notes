@@ -357,9 +357,9 @@ If our proof meets all of the criteria above, we've proven that the scheme is *n
 
 Soon we'll write such a proof for the ECB scheme, but we'll do more and show that some of the 4 encryption schemes we saw and couldn't find the attacks will be broken formally. The definition will also help us prove the security of some schemes using a slightly different outline.
 
-## L16: IND-CPA definition -- Example 1
+## L16: IND-CPA definition -- Example - Part 1
 
-{{< img src="module2-0016-filled.png" alt="How to prove a scheme is not secure" class="border-0" >}}
+{{< img src="module2-0016-1.png" alt="How to prove a scheme is not secure" class="border-0" >}}
 
 Let's test our new IND-CPA definition on a toy example which we know is insecure. If it works, we know our definition works. Let's take a symmetric encryption scheme $\mathcal{SE}(\mathcal{KeySp}, \mathcal{E}, \mathcal{D})$, and let's discuss the component algorithms:
 
@@ -387,4 +387,14 @@ Let's test our new IND-CPA definition on a toy example which we know is insecure
   + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
   1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = 1 - 0 = 1$.
 
-  Let's evaluate the resources of the attacker in the next lecture
+Let's evaluate the resources of the attacker in the next lecture
+
+## L17: IND-CPA definition -- Example - Part 2
+
+{{< img src="module2-0016-2.png" alt="How to prove a scheme is not secure" class="border-0" >}}
+
+Continued from the last lecture, the last thing we need to justify are the resources of the attacker:
+
++ **The time-complexity** $t$: The attacker only compared two bit-strings of length $n$, so the time taken was the time to compare $n$-bits.
++ **The number of queries** $q$: There was only a single query, so $q = 1$
++ **The length of the bits sent** $\mu$: We sent two bit-strings of length $n$, so $\mu = 2n$
