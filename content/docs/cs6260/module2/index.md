@@ -324,7 +324,7 @@ _If a terrible attacker has a low IND-CPA advantage, is the scheme IND-CPA secur
 
 1. Recall that the advantage is measured as: $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
 1. Can we evaluate the probabilities of the attacker being correct and incorrect? Let's try:
-  + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the tiem, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
+  + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the time, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
   + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
 1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv^{ind-cpa}}(\mathcal{A} ) = 1 - 0 = 1$.
 
@@ -357,7 +357,7 @@ If our proof meets all of the criteria above, we've proven that the scheme is *n
 
 Soon we'll write such a proof for the ECB scheme, but we'll do more and show that some of the 4 encryption schemes we saw and couldn't find the attacks will be broken formally. The definition will also help us prove the security of some schemes using a slightly different outline.
 
-## L16: IND-CPA definition -- Example - Part 1
+## L16: IND-CPA definition -- Example 1
 
 {{< img src="module2-0016-1.png" alt="How to prove a scheme is not secure" class="border-0" >}}
 
@@ -383,18 +383,52 @@ Let's test our new IND-CPA definition on a toy example which we know is insecure
 + **The IND-CPA Advantage**: Let's now evaluate the attacker's advantage:
   1. The advantage for the symmetric encryption scheme $\mathcal{SE}$ is put forth as: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
   1. Can we evaluate the probabilities of the attacker being correct and incorrect? Let's try:
-  + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the tiem, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
+  + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the time, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
   + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
   1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = 1 - 0 = 1$.
++ **The resources of the attacker**: We need to ensure that these are reasonable.
+  + **The time-complexity** $t$: The attacker only compared two bit-strings of length $n$, so the time taken was the time to compare $n$-bits.
+  + **The number of queries** $q$: There was only a single query, so $q = 1$
+  + **The length of the bits sent** $\mu$: We sent two bit-strings of length $n$, so $\mu = 2n$
 
-Let's evaluate the resources of the attacker in the next lecture
 
-## L17: IND-CPA definition -- Example - Part 2
+
+## L17: IND-CPA definition -- Example 2
 
 {{< img src="module2-0016-2.png" alt="How to prove a scheme is not secure" class="border-0" >}}
 
-Continued from the last lecture, the last thing we need to justify are the resources of the attacker:
+Now let's look at another symmetric encryption scheme $\mathcal{SE}(\mathcal{KeySp}, \mathcal{E}, \mathcal{D})$, and let's discuss the component algorithms:
 
-+ **The time-complexity** $t$: The attacker only compared two bit-strings of length $n$, so the time taken was the time to compare $n$-bits.
-+ **The number of queries** $q$: There was only a single query, so $q = 1$
-+ **The length of the bits sent** $\mu$: We sent two bit-strings of length $n$, so $\mu = 2n$
+* **The key generation algorithm $\mathcal{K}$**: This specifies how the symmetric key ${\color{Red} K}$ is generated, which will be shared between the sender $\mathcal{S}$  and receiver $\mathcal{R}$. This is usually a randomized algorithm that picks a random ${\color{Red} K} \in \mathcal{KeySp}$ where $\mathcal{KeySp}$ is a set containing all valid keys.
+* <strong>The encryption algorithm $\mathcal{E}_ {\color{Red} K}$</strong>:  Takes a message $M \in \mathcal{MsgSp}$ where $\mathcal{MsgSp} = \\{0,1\\}^n$ is a set containing all valid messages and outputs a ciphertext $C$ such that it leaks the first bit of the message $M$ as the first bit of the ciphertext, and returns the rest of the ciphertext as $M$ encrypted by another secure encryption algorithm $\mathcal{E}_{\color{Red} K}'$. i.e. $C \leftarrow (M[1] \mathbin\Vert \mathcal{E}_{\color{Red} K}'(M)) = (M[1] \mathbin\Vert C')$. Where $M[1]$ is the first bit of the message.
+* **The decryption algorithm $\mathcal{D}_{\color{Red} K}$**: This is a [deterministic](https://en.wikipedia.org/wiki/Deterministic_algorithm) algorithm that takes as inputs the ciphertext $C$ and returns the ciphertext back as the message. In this case, it removes the first bit, and decrypts the rest of the ciphertext by passing it to the decryption algorithm $\mathcal{D}_ {\color{Red} K}'$, i.e. $M \leftarrow \mathcal{D}_{\color{Red} K}(C) = \mathcal{D} _{\color{Red} K}(b \mathbin\Vert C') = \mathcal{D}_{\color{Red} K}'(C') $, where $b$ is the first bit of the ciphertext $C$
+
+**Is this scheme correct?** Yes. if you encrypt any message, and decrypt it, you will get the original message, i.e. $\mathcal{D_{\color{Red} K}}(\mathcal{E_{\color{Red} K}}(M)) = M$
+
+{{< img src="module2-0016-3.png" alt="How to prove a scheme is not secure" class="border-0" >}}
+
+**Is this scheme secure?** No. It feels more secure, as the last one, but it likely isn't, let's prove this:
++ **The attacker $\mathcal{A}$**: The algorithm for the attack is as follows:
+  1. We define an Adversary that attacks our encryption algorithm under the IND-CPA definition: $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))}$
+  1. We know that for the IND-CPA challenge, the encryption oracle will take an attacker's message inputs $M_0$ and $M_1$ and return a ciphertext $C$ based on the ${\color{Red} b}$ i.e. $ C \xleftarrow{\$} \mathcal{E}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))$, and that:
+      * if ${\color{Red} b} = 1$ then $C = \mathcal{E}_{\color{Red} K}(M_1)$
+      * if ${\color{Red} b} = 0$ then $C = \mathcal{E}_{\color{Red} K}(M_0)$
+  1. With this in mind, if we pass the first message as as all zeroes and the second as all ones, i.e. $M_0 = (0)^n$ and $M_1 = (1)^n$ achieving $ C \leftarrow \mathcal{E}_{\color{Red} K}(LR((0)^n, (1)^n, {\color{Red} b}))$
+  1. We can simply run the following answer for $d$:
+      * If the first bit of the ciphertext is zero, then return zero, i.e $C[0] = 0$ for $ M_0 = (0)^n$ then return $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))} \Rightarrow d = 0$
+      * Otherwise, first bit of the ciphertext is one, and so you can return one, i.e $C[0] = 1$ for $ M_1 = (1)^n$ then return $\mathcal{A}^{{\mathcal{E}}_{\color{Red} K}(LR(M_0, M_1, {\color{Red} b}))} \Rightarrow d = 1$
++ **The IND-CPA Advantage**: Let's now evaluate the attacker's advantage:
+  1. The advantage for the symmetric encryption scheme $\mathcal{SE}$ is put forth as: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] - Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname{ind-cpa-1}]$.
+  1. Can we evaluate the probabilities of the attacker being correct and incorrect? Let's try:
+  + Since the attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be correct **all** the time, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-0}] = 1$
+  + Similarly, since attacker outputs their guess $d$ precisely equal to the bit value ${\color{Red} b}$, they'll be **never** be incorrect, i.e. $Pr[\mathcal{A} \Rightarrow 0 \ \mathrm{in} \operatorname {ind-cpa-1}] = 0$
+  1. Plugging these probabilities back in we find that the attacker has an advantage of zero: $\mathrm{Adv_{\mathcal{SE}}^{ind-cpa}}(\mathcal{A} ) = 1 - 0 = 1$.
++ **The resources of the attacker**: We need to ensure that these are reasonable.
+  + **The time-complexity** $t$: The attacker only compared one, so the time taken was the time to compare $1$-bit. _This is much more efficient than the last example_
+  + **The number of queries** $q$: There was only a single query, so $q = 1$
+  + **The length of the bits sent** $\mu$: We sent two bit-strings of length $n$, so $\mu = 2n$
+
+**We can make a generalization from these examples** that if any bits of the message or any deterministic function of the bits is leaked, the attacker can successfully attack the scheme:
+
+*  If any bits of the message are leaked, the attacker can vary those bits in the two messages, and check the corresponding positions in the ciphertext. E.g. if the middle bits of the message appear in the last bits of the ciphertext, the attacker can vary those middle bits, and check the last bits of the ciphertext
+* If the scheme is such that it yields a function of all the bits, e.g. an XOR, the attacker will pick two messages such that the XOR of the bits is different for the two messages and when it gets the ciphertext will know which is which.
